@@ -1,10 +1,12 @@
---
--- Feral by Insa
--- A addon by Insa of Venoxis inspired by https://github.com/NerdEgghead/WotLK_cat_sim by NerdEgghead
-
 ------------------------------------------------------------------------------------------------------------------------
-if IsSpellKnown(48574) ~= true then
-    print("Disabling Feral By Nerd Druids: Rake is not learned.")
+--- FeralByNerdDruids - an addon by a collaborative work of many druids found in https://discord.com/invite/classicdruid
+------------------------------------------------------------------------------------------------------------------------
+
+local _, playerClass = UnitClass("player")
+local playerLevel = UnitLevel("player")
+
+if (playerClass ~= "DRUID" or playerLevel < 80) then
+    print("Disabling Feral By Nerd Druids: You are not a druid or not level 80");
     return
 end
 
