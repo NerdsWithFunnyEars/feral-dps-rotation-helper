@@ -20,14 +20,6 @@ end
 -- Main Array
 FeralByNerdDruids = {}
 
-FeralByNerdDruids.mainFrame = nil;
-FeralByNerdDruids.mainFrame_last = nil;
-FeralByNerdDruids.mainFrame_current = nil;
-FeralByNerdDruids.mainFrame_next = nil;
-FeralByNerdDruids.mainFrame_misc = nil;
-FeralByNerdDruids.mainFrame_int = nil;
-
-
 FeralByNerdDruids.playerName = nil;
 FeralByNerdDruids.playerClass = nil;
 FeralByNerdDruids.playerLevel = nil;
@@ -90,221 +82,6 @@ FeralByNerdDruids.textureList = {
 }
 ------------------------------------------------------------------------------------------------------------------------
 -- Local Variables end
-
--- Event Frame
-------------------------------------------------------------------------------------------------------------------------
-
--- Create Event Frame
-FeralByNerdDruids.eventFrame = CreateFrame("Frame")
--- Hook all incoming events to it
-FeralByNerdDruids.eventFrame:SetScript("OnEvent", function(_, event, ...)
-    FeralByNerdDruids.events[event](...)
-end)
-
--- Register the following Events to it
-FeralByNerdDruids.eventFrame:RegisterEvent("ADDON_LOADED")
-FeralByNerdDruids.eventFrame:RegisterEvent("PLAYER_LOGIN")
-FeralByNerdDruids.eventFrame:RegisterEvent("PLAYER_ALIVE")
-FeralByNerdDruids.eventFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
-FeralByNerdDruids.eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-FeralByNerdDruids.eventFrame:RegisterEvent("COMBAT_RATING_UPDATE")
-FeralByNerdDruids.eventFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
-FeralByNerdDruids.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-FeralByNerdDruids.eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-FeralByNerdDruids.eventFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-------------------------------------------------------------------------------------------------------------------------
--- Event Frame End
-
--- Main Suggestion Frame
-------------------------------------------------------------------------------------------------------------------------
--- Create Main Frame
-local mainFrame = CreateFrame(
-        "Frame",
-        "FeralByNerdDruids_MainFrame",
-        UIParent,
-        BackdropTemplateMixin and "BackdropTemplate")
-
--- Set Properties
-mainFrame:SetFrameStrata("Low")
-mainFrame:SetWidth(250)
-mainFrame:SetHeight(90)
-mainFrame:SetBackdrop({
-    bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", tile = true, tileSize = 32,
-})
-
-mainFrame:SetBackdropColor(0, 0, 0, 0.4)
-mainFrame:EnableMouse(true)
-mainFrame:SetMovable(true)
-mainFrame:SetClampedToScreen(true)
-mainFrame:SetScript("OnMouseDown", function(self)
-    self:StartMoving()
-end)
-mainFrame:SetScript("OnMouseUp", function(self)
-    self:StopMovingOrSizing()
-end)
-mainFrame:SetScript("OnDragStop", function(self)
-    self:StopMovingOrSizing()
-end)
-mainFrame:SetPoint("CENTER")
-
-mainFrame:SetScript("OnUpdate", function(self, elapsed)
-    FeralByNerdDruids:OnUpdate(elapsed)
-end)
-
-FeralByNerdDruids.mainFrame = mainFrame;
-------------------------------------------------------------------------------------------------------------------------
--- Main Suggestion Frame End
-
--- Helper Texture Frames
-------------------------------------------------------------------------------------------------------------------------
-local mainFrame_last = CreateFrame("Frame", "$parent_last", mainFrame)
-local mainFrame_current = CreateFrame("Frame", "$parent_current", mainFrame)
-local mainFrame_next = CreateFrame("Frame", "$parent_next", mainFrame)
-local mainFrame_misc = CreateFrame("Frame", "$parent_misc", mainFrame)
-local mainFrame_int = CreateFrame("Frame", "$parent_int", mainFrame)
-
-mainFrame_last:SetWidth(45)
-mainFrame_current:SetWidth(70)
-mainFrame_next:SetWidth(45)
-mainFrame_misc:SetWidth(45)
-mainFrame_int:SetWidth(45)
-
-mainFrame_last:SetHeight(45)
-mainFrame_current:SetHeight(70)
-mainFrame_next:SetHeight(45)
-mainFrame_misc:SetHeight(45)
-mainFrame_int:SetHeight(45)
-
-mainFrame_last:SetPoint("TOPLEFT", 0, -45)
-mainFrame_current:SetPoint("TOPLEFT", 90, -10)
-mainFrame_next:SetPoint("TOPLEFT", 200, -45)
-mainFrame_misc:SetPoint("TOPLEFT", 0, 0)
-mainFrame_int:SetPoint("TOPLEFT", 200, 0)
-
-local t = mainFrame_last:CreateTexture(nil, "Low")
-t:SetTexture(nil)
-t:SetAllPoints(mainFrame_last)
-t:SetAlpha(.8)
-mainFrame_last.texture = t
-FeralByNerdDruids.textureList["last"] = t
-
-t = mainFrame_current:CreateTexture(nil, "Low")
-t:SetTexture(nil)
-t:ClearAllPoints()
-t:SetAllPoints(mainFrame_current)
-mainFrame_current.texture = t
-FeralByNerdDruids.textureList["current"] = t
-
-t = mainFrame_next:CreateTexture(nil, "Low")
-t:SetTexture(nil)
-t:SetAllPoints(mainFrame_next)
-t:SetAlpha(.8)
-mainFrame_next.texture = t
-FeralByNerdDruids.textureList["next"] = t
-
-t = mainFrame_misc:CreateTexture(nil, "Low")
-t:SetTexture(nil)
-t:SetAllPoints(mainFrame_misc)
-t:SetAlpha(.8)
-mainFrame_misc.texture = t
-FeralByNerdDruids.textureList["misc"] = t
-
-t = mainFrame_int:CreateTexture(nil, "Low")
-t:SetTexture(nil)
-t:SetAllPoints(mainFrame_int)
-t:SetAlpha(.8)
-mainFrame_int.texture = t
-FeralByNerdDruids.textureList["int"] = t
-
-FeralByNerdDruids.globalCooldownFrame = CreateFrame("Cooldown", "FeralByNerdDruids_GCDFrame", mainFrame_current, "CooldownFrameTemplate");
-FeralByNerdDruids.globalCooldownFrame:SetAllPoints();
-
-FeralByNerdDruids.mainFrame_last = mainFrame_last;
-FeralByNerdDruids.mainFrame_current = mainFrame_current;
-FeralByNerdDruids.mainFrame_next = mainFrame_next;
-FeralByNerdDruids.mainFrame_misc = mainFrame_misc;
-FeralByNerdDruids.mainFrame_int = mainFrame_int;
-
-------------------------------------------------------------------------------------------------------------------------
--- Helper Texture Frames End
-
--- Define our Event Handlers here
-FeralByNerdDruids.events = {}
-
-function FeralByNerdDruids.events.ADDON_LOADED(addon)
-    if addon ~= "FeralByNerdDruids" then
-        return
-    end
-
-    local _, playerClass = UnitClass("player")
-    local playerLevel = UnitLevel("player")
-
-    if (playerClass ~= "DRUID" or playerLevel < 80) then
-        FeralByNerdDruids.eventFrame:UnregisterEvent("PLAYER_ALIVE")
-        FeralByNerdDruids.eventFrame:UnregisterEvent("ADDON_LOADED")
-        FeralByNerdDruids.eventFrame:UnregisterEvent("PLAYER_LOGIN")
-        FeralByNerdDruids.eventFrame:UnregisterEvent("PLAYER_TARGET_CHANGED")
-        FeralByNerdDruids.eventFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-        FeralByNerdDruids.eventFrame:UnregisterEvent("COMBAT_RATING_UPDATE")
-        FeralByNerdDruids.eventFrame:UnregisterEvent("PLAYER_TARGET_CHANGED")
-        FeralByNerdDruids.eventFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-        FeralByNerdDruids.eventFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-        FeralByNerdDruids.eventFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-    end
-
-    -- Default saved variables
-    if not FeralByNerdDruidsDB then
-        FeralByNerdDruidsDB = {}
-        FeralByNerdDruidsDB.versionNumber = 1
-    end
-
-    if not FeralByNerdDruidsDB.updateInterval then
-        FeralByNerdDruidsDB.updateInterval = 0.1
-    end
-end
-
-function FeralByNerdDruids.events.PLAYER_ALIVE()
-    FeralByNerdDruids.eventFrame:UnregisterEvent("PLAYER_ALIVE")
-end
-
-function FeralByNerdDruids.events.PLAYER_LOGIN()
-    FeralByNerdDruids.playerName = UnitName("player");
-end
-
-function FeralByNerdDruids.events.PLAYER_TARGET_CHANGED(...)
-    if UnitGUID("target") then
-        FeralByNerdDruids.currentTarget.guid = UnitGUID("target")
-    else
-        FeralByNerdDruids.currentTarget.guid = "A"
-    end
-end
-
-function FeralByNerdDruids.events.COMBAT_LOG_EVENT_UNFILTERED(_, event, _, _, _, _, _, _, _, _, _, arg12, ...)
-    FeralByNerdDruids.eventFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-end
-
-function FeralByNerdDruids.events.COMBAT_RATING_UPDATE(_)
-    FeralByNerdDruids.eventFrame:UnregisterEvent("COMBAT_RATING_UPDATE")
-end
-
-function FeralByNerdDruids.events.PLAYER_REGEN_ENABLED(...)
-    FeralByNerdDruids.damage = nil;
-
-    for i = 1, 10 do
-        FeralByNerdDruids.currentTarget.hp[i] = 0;
-        FeralByNerdDruids.currentTarget.dps[i] = 0;
-        FeralByNerdDruids.currentTarget.time[i] = 0;
-    end
-end
-
-function FeralByNerdDruids.events.PLAYER_REGEN_DISABLED(...)
-    FeralByNerdDruids.eventFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-end
-
-function FeralByNerdDruids.events.PLAYER_EQUIPMENT_CHANGED(...)
-    FeralByNerdDruids.eventFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-end
-
 
 function FeralByNerdDruids:estimatedFightLength()
     local currentTime = GetTime();
@@ -506,11 +283,11 @@ end
 function FeralByNerdDruids:decideOnSpellInRotation()
     local guid = UnitGUID("target")
     if guid == nil or UnitCanAttack("player", "target") == false then
-        FeralByNerdDruids.textureList["last"]:SetTexture(nil)
-        FeralByNerdDruids.textureList["current"]:SetTexture(nil)
-        FeralByNerdDruids.textureList["next"]:SetTexture(nil)
-        FeralByNerdDruids.textureList["misc"]:SetTexture(nil)
-        FeralByNerdDruids.textureList["int"]:SetTexture(nil)
+        FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(nil)
+        FeralByNerdDruidsFrames.textureList["current"]:SetTexture(nil)
+        FeralByNerdDruidsFrames.textureList["next"]:SetTexture(nil)
+        FeralByNerdDruidsFrames.textureList["cat"]:SetTexture(nil)
+        FeralByNerdDruidsFrames.textureList["berserk"]:SetTexture(nil)
         return
     end
 
@@ -904,7 +681,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     rotationData.ripRefreshPending = ripRefreshPending;
 
     spell = FeralByNerdDruids:nextSpell(rotationData)
-    FeralByNerdDruids.textureList["current"]:SetTexture(GetSpellTexture(spell));
+    FeralByNerdDruidsFrames.textureList["current"]:SetTexture(GetSpellTexture(spell));
 end
 
 --GUID Parser
@@ -928,23 +705,5 @@ function parseGUID(guid)
         elseif unit_type == "Vehicle" then
             FeralByNerdDruids.currentTarget.unitType = 0x005
         end
-    end
-end
-
-function FeralByNerdDruids:OnUpdate(elapsed)
-    FeralByNerdDruids.timeSinceLastUpdate = FeralByNerdDruids.timeSinceLastUpdate + elapsed;
-
-    local start, duration = GetSpellCooldown(L["Rake"])
-    FeralByNerdDruids.globalCooldownFrame:SetCooldown(start, duration)
-
-    while (FeralByNerdDruids.timeSinceLastUpdate >= FeralByNerdDruidsDB.updateInterval) do
-        local catform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(L["Cat Form"], "player", "HELPFUL")
-        local bearform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(L["Dire Bear Form"], "player", "HELPFUL")
-        local _, _, _, _, currRank, _ = GetTalentInfo(2, 27)
-
-        if (((catform ~= nil) or (bearform ~= nil)) and currRank ~= 0) then
-            FeralByNerdDruids:decideOnSpellInRotation()
-        end
-        FeralByNerdDruids.timeSinceLastUpdate = FeralByNerdDruids.timeSinceLastUpdate - FeralByNerdDruidsDB.updateInterval;
     end
 end
