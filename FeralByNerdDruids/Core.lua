@@ -217,8 +217,8 @@ function FeralByNerdDruids:nextSpell(rotationData)
             return L["Lacerate"];
         elseif(rotationData.mangleBearReady) then
             return L["Mangle (Bear)"];
-        elseif(self:checkQueueMaul(rotationData)) then
-            return L["Maul"];
+        else
+            return nil;
         end
     elseif (rotationData.emergencyBearweave) then
         return L["Dire Bear Form"];
@@ -422,7 +422,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     rotationData.lacerateRage = GetSpellPowerCost(L["Lacerate"])[1].cost
     rotationData.maulRage = GetSpellPowerCost(L["Maul"])
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Rake Debuff"], "target", "PLAYER|HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Rake"], "target", "PLAYER|HARMFUL");
     if name ~= nil then
         rotationData.rakeDuration = expirationTime - currentTime
         rotationData.rakeActive = true;
@@ -431,7 +431,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.rakeActive = false;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Rip Debuff"], "target", "PLAYER|HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Rip"], "target", "PLAYER|HARMFUL");
     if name ~= nil then
         rotationData.ripDuration = expirationTime - currentTime
         rotationData.ripActive = true;
@@ -440,7 +440,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.ripActive = false;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Mangle (Cat) Debuff"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Mangle (Cat)"], "target", "HARMFUL");
     if name ~= nil then
         mangleCatDuration = expirationTime - currentTime
         mangleCatActive = true;
@@ -449,7 +449,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         mangleCatActive = false;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Mangle (Bear) Debuff"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Mangle (Bear)"], "target", "HARMFUL");
     if name ~= nil then
         mangleBearDuration = expirationTime - currentTime
         mangleBearActive = true;
@@ -682,6 +682,13 @@ function FeralByNerdDruids:decideOnSpellInRotation()
 
     spell = FeralByNerdDruids:nextSpell(rotationData)
     FeralByNerdDruidsFrames.textureList["current"]:SetTexture(GetSpellTexture(spell));
+    if(rotationData.bearForm) then
+        if(self:checkQueueMaul(rotationData)) then
+            FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(GetSpellTexture(L["Maul"]));
+        else
+            FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(nil);
+        end
+    end
 end
 
 --GUID Parser
