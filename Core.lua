@@ -3,6 +3,11 @@
 -- A addon by Insa of Venoxis inspired by https://github.com/NerdEgghead/WotLK_cat_sim by NerdEgghead
 
 ------------------------------------------------------------------------------------------------------------------------
+if IsSpellKnown(48574) ~= true then
+    print("Disabling Feral By Nerd Druids: Rake is not learned.")
+    return
+end
+
 SLASH_RELOAD1 = "/rl"
 SlashCmdList.RELOAD = ReloadUi
 
