@@ -537,7 +537,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     end
 
     startTime, duration, _ = GetSpellCooldown(L["Berserk"]);
-    if(startTime == 0 or (duration - rotationData.globalCooldown <= 0)) then
+    if(startTime == 0 or ((startTime - currentTime + duration - rotationData.globalCooldown) <= 0)) then
         rotationData.berserkReady = true;
         rotationData.berserkCooldown = 0;
     else
@@ -546,7 +546,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     end
 
     startTime, duration, _ = GetSpellCooldown(L["Mangle (Bear)"]);
-    if(startTime == 0 or (duration - rotationData.globalCooldown <= 0)) then
+    if(startTime == 0 or (startTime - currentTime + duration - rotationData.globalCooldown <= 0)) then
         rotationData.mangleBearReady = true;
         rotationData.mangleBearCooldown = 0;
     else
@@ -555,7 +555,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     end
 
     startTime, duration, _ = GetSpellCooldown(L["Faerie Fire (Feral)"]);
-    if(startTime == 0 or (duration - rotationData.globalCooldown <= 0)) then
+    if(startTime == 0 or (startTime - currentTime + duration - rotationData.globalCooldown <= 0)) then
         rotationData.faerieFireFeralReady = true;
         rotationData.faerieFireFeralCooldown = 0;
     else
@@ -564,7 +564,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     end
 
     startTime, duration, _ = GetSpellCooldown(L["Tiger's Fury"]);
-    if(startTime == 0 or (duration - rotationData.globalCooldown <= 0)) then
+    if(startTime == 0 or (startTime - currentTime + duration - rotationData.globalCooldown <= 0)) then
         rotationData.tigersFuryReady = true;
         rotationData.tigersFuryCooldown = 0;
     else
@@ -694,6 +694,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     spell = FeralByNerdDruids:nextSpell(rotationData)
     FeralByNerdDruidsFrames.textureList["current"]:SetTexture(GetSpellTexture(spell));
     if(rotationData.bearForm) then
+        FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
         if(self:checkQueueMaul(rotationData)) then
             FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(GetSpellTexture(L["Maul"]));
             if(isMaulQueued()) then
