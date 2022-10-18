@@ -734,11 +734,11 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     else
         rotationData.omenOfClarity = 0;
     end
-    local omenOfClarityDown = 1
+    local omenOfClarityDown = true;
     if rotationData.omenOfClarity > 0 then
-        omenOfClarityDown = 0
+        omenOfClarityDown = false;
     else
-        omenOfClarityDown = 1
+        omenOfClarityDown = true;
     end
 
     rotationData.mangleEnergy = GetSpellPowerCost(FeralByNerdDruids.L["Mangle (Cat)"])[1].cost
@@ -919,7 +919,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.biteNow = rotationData.catEnergy <= strategyBerserkBiteThreshold;
     end
 
-    rotationData.rakeNow = (strategyUseRake) and
+    rotationData.rakeNow = strategyUseRake and
             rotationData.rakeActive == false and
             rotationData.encounterTimeRemaining > rakeMaxDuration and
             omenOfClarityDown;
@@ -1009,7 +1009,6 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     rotationData.excessEnergy = excessEnergy;
     rotationData.ripRefreshPending = ripRefreshPending;
 
-    print(rotationData.encounterTimeRemaining);
     spell = FeralByNerdDruids:nextSpell(rotationData)
     FeralByNerdDruids.textureList["current"]:SetTexture(GetSpellTexture(spell));
 end
