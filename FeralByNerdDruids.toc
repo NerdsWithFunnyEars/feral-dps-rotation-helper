@@ -1,0 +1,1 @@
+## Interface: 30400## Title: Feral by Nerd Druids## Notes: A smart feral rotation AddOn## Author: Insa of Venoxis (EU)## Version: 1## SavedVariables: FeralByNerdDruidsDBCore.lua
