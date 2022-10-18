@@ -17,6 +17,12 @@ FeralByNerdDruidsFrames.textureList = {
     ["berserk"] = nil,
 }
 
+FeralByNerdDruidsFrames.textList = {
+    ["bear"] = nil,
+    ["cat"] = nil,
+    ["berserk"] = nil,
+}
+
 
 --- Event Frame Start
 ------------------------------------------------------------------------------------------------------------------------
@@ -110,7 +116,7 @@ mainFrame_next.texture = t
 FeralByNerdDruidsFrames.textureList["next"] = t
 
 -- Display Frame for Bear Information, bottom left on the main Frame
-local mainFrame_bear = CreateFrame("Frame", "$parent_last", mainFrame)
+local mainFrame_bear = CreateFrame("Frame", "$parent_bear", mainFrame)
 mainFrame_bear:SetWidth(45)
 mainFrame_bear:SetHeight(45)
 mainFrame_bear:SetPoint("TOPLEFT", 0, -45)
@@ -120,9 +126,15 @@ t:SetAllPoints(mainFrame_bear)
 t:SetAlpha(.8)
 mainFrame_bear.texture = t
 FeralByNerdDruidsFrames.textureList["bear"] = t
+local text = mainFrame_bear:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+text:SetAllPoints();
+text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE, MONOCHROME")
+text:SetTextColor(1, 0, 0, 1);
+mainFrame_bear.text = text;
+FeralByNerdDruidsFrames.textList["bear"] = text;
 
 -- Display Frame for Cat Information, top left on the main Frame
-local mainFrame_cat = CreateFrame("Frame", "$parent_misc", mainFrame)
+local mainFrame_cat = CreateFrame("Frame", "$parent_cat", mainFrame)
 mainFrame_cat:SetWidth(45)
 mainFrame_cat:SetHeight(45)
 mainFrame_cat:SetPoint("TOPLEFT", 0, 0)
@@ -132,10 +144,16 @@ t:SetAllPoints(mainFrame_cat)
 t:SetAlpha(.8)
 mainFrame_cat.texture = t
 FeralByNerdDruidsFrames.textureList["cat"] = t
+text = mainFrame_cat:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+text:SetAllPoints();
+text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE, MONOCHROME")
+text:SetTextColor(1, 0, 0, 1);
+mainFrame_cat.text = text;
+FeralByNerdDruidsFrames.textList["cat"] = text;
 
 
 -- Display Frame for Berserk Data, top right on the main Frame
-local mainFrame_berserk = CreateFrame("Frame", "$parent_int", mainFrame)
+local mainFrame_berserk = CreateFrame("Frame", "$parent_berserk", mainFrame)
 mainFrame_berserk:SetHeight(45)
 mainFrame_berserk:SetWidth(45)
 mainFrame_berserk:SetPoint("TOPLEFT", 200, 0)
@@ -145,6 +163,13 @@ t:SetAllPoints(mainFrame_berserk)
 t:SetAlpha(.8)
 mainFrame_berserk.texture = t
 FeralByNerdDruidsFrames.textureList["berserk"] = t
+text = mainFrame_berserk:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+text:SetAllPoints();
+text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE, MONOCHROME")
+text:SetTextColor(1, 0, 0, 1);
+mainFrame_berserk.text = text;
+FeralByNerdDruidsFrames.textList["berserk"] = text;
+
 
 FeralByNerdDruidsFrames.globalCooldownFrame = CreateFrame("Cooldown", "FeralByNerdDruids_GCDFrame", mainFrame_current, "CooldownFrameTemplate");
 FeralByNerdDruidsFrames.globalCooldownFrame:SetAllPoints();

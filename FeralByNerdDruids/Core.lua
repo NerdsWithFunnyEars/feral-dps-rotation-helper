@@ -280,6 +280,14 @@ function FeralByNerdDruids:clipSavageRoar(rotationData)
     return rotationData.savageRoarDuration <= rotationData.strategyMaxRoarClip
 end
 
+function isMaulQueued()
+    for lActionSlot = 1, 120 do
+        if(IsCurrentAction(lActionSlot) and GetActionTexture(lActionSlot) == GetSpellTexture(L["Maul"])) then
+            return true;
+        end
+    end
+end
+
 function FeralByNerdDruids:decideOnSpellInRotation()
     local guid = UnitGUID("target")
     if guid == nil or UnitCanAttack("player", "target") == false then
@@ -288,6 +296,9 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         FeralByNerdDruidsFrames.textureList["next"]:SetTexture(nil)
         FeralByNerdDruidsFrames.textureList["cat"]:SetTexture(nil)
         FeralByNerdDruidsFrames.textureList["berserk"]:SetTexture(nil)
+        FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
+        FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 0);
+        FeralByNerdDruidsFrames.textList["berserk"]:SetTextColor(1, 0, 0, 0);
         return
     end
 
@@ -526,7 +537,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     end
 
     startTime, duration, _ = GetSpellCooldown(L["Berserk"]);
-    if(startTime == 0) then
+    if(startTime == 0 or (duration - rotationData.globalCooldown <= 0)) then
         rotationData.berserkReady = true;
         rotationData.berserkCooldown = 0;
     else
@@ -535,7 +546,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     end
 
     startTime, duration, _ = GetSpellCooldown(L["Mangle (Bear)"]);
-    if(startTime == 0) then
+    if(startTime == 0 or (duration - rotationData.globalCooldown <= 0)) then
         rotationData.mangleBearReady = true;
         rotationData.mangleBearCooldown = 0;
     else
@@ -544,7 +555,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     end
 
     startTime, duration, _ = GetSpellCooldown(L["Faerie Fire (Feral)"]);
-    if(startTime == 0) then
+    if(startTime == 0 or (duration - rotationData.globalCooldown <= 0)) then
         rotationData.faerieFireFeralReady = true;
         rotationData.faerieFireFeralCooldown = 0;
     else
@@ -553,7 +564,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     end
 
     startTime, duration, _ = GetSpellCooldown(L["Tiger's Fury"]);
-    if(startTime == 0) then
+    if(startTime == 0 or (duration - rotationData.globalCooldown <= 0)) then
         rotationData.tigersFuryReady = true;
         rotationData.tigersFuryCooldown = 0;
     else
@@ -685,9 +696,57 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     if(rotationData.bearForm) then
         if(self:checkQueueMaul(rotationData)) then
             FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(GetSpellTexture(L["Maul"]));
+            if(isMaulQueued()) then
+                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(false);
+            else
+                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(true);
+            end
         else
             FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(nil);
         end
+        FeralByNerdDruidsFrames.textureList["cat"]:SetTexture(GetSpellTexture(L["Rip"]))
+        if(rotationData.ripActive) then
+            FeralByNerdDruidsFrames.textureList["cat"]:SetDesaturated(false);
+            FeralByNerdDruidsFrames.textList["cat"]:SetText(math.ceil(rotationData.ripDuration));
+            FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 1);
+        else
+            FeralByNerdDruidsFrames.textureList["cat"]:SetDesaturated(true);
+            FeralByNerdDruidsFrames.textList["cat"]:SetText(nil);
+            FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 0);
+        end
+    elseif(rotationData.catForm) then
+        if(self:getWeavingType() == 2) then
+            FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(GetSpellTexture(L["Lacerate"]));
+            if(rotationData.lacerateBearActive) then
+                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(false);
+                FeralByNerdDruidsFrames.textList["bear"]:SetText(math.ceil(rotationData.lacerateBearDuration));
+                FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 1);
+            else
+                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(true);
+                FeralByNerdDruidsFrames.textList["bear"]:SetText(nil);
+                FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
+            end
+        end
+        FeralByNerdDruidsFrames.textureList["cat"]:SetTexture(GetSpellTexture(L["Tiger's Fury"]))
+        if(rotationData.tigersFuryReady) then
+            FeralByNerdDruidsFrames.textureList["cat"]:SetDesaturated(false);
+            FeralByNerdDruidsFrames.textList["cat"]:SetText(nil);
+            FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 0);
+        else
+            FeralByNerdDruidsFrames.textureList["cat"]:SetDesaturated(true);
+            FeralByNerdDruidsFrames.textList["cat"]:SetText(math.ceil(rotationData.tigersFuryCooldown));
+            FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 1);
+        end
+    end
+    FeralByNerdDruidsFrames.textureList["berserk"]:SetTexture(GetSpellTexture(L["Berserk"]));
+    if(rotationData.berserkReady) then
+        FeralByNerdDruidsFrames.textureList["berserk"]:SetDesaturated(false);
+        FeralByNerdDruidsFrames.textList["berserk"]:SetText(nil);
+        FeralByNerdDruidsFrames.textList["berserk"]:SetTextColor(1, 0, 0, 0);
+    else
+        FeralByNerdDruidsFrames.textureList["berserk"]:SetDesaturated(true);
+        FeralByNerdDruidsFrames.textList["berserk"]:SetText(math.ceil(rotationData.berserkCooldown));
+        FeralByNerdDruidsFrames.textList["berserk"]:SetTextColor(1, 0, 0, 1);
     end
 end
 
