@@ -1,5 +1,7 @@
 ------------------------------------------------------------------------------------------------------------------------
 --- FeralByNerdDruids - an addon by a collaborative work of many druids found in https://discord.com/invite/classicdruid
+
+-- Core File - builds up the main addon
 ------------------------------------------------------------------------------------------------------------------------
 
 local _, playerClass = UnitClass("player")
@@ -10,18 +12,6 @@ if (playerClass ~= "DRUID" or playerLevel < 80) then
     return
 end
 
-SLASH_RELOAD1 = "/rl"
-SlashCmdList.RELOAD = ReloadUi
-
-SLASH_FRAMESTK1 = "/fs"
-SlashCmdList.FRAMESTK = function()
-    LoadAddOn('Blizzard_DebugTools')
-    FrameStackTooltip_Toggle()
-end
-
-for i = 1, NUM_CHAT_WINDOWS do
-    _G["ChatFrame"..i.."EditBox"]:SetAltArrowKeyMode(false)
-end
 ------------------------------------------------------------------------------------------------------------------------
 
 -- Local Variables
@@ -89,109 +79,6 @@ FeralByNerdDruids.currentTarget.time = {
     [9] = 9,
     [10] = 10,
 }
-
-FeralByNerdDruids.L = {
-    ["Rake"] = "Rake",
-    ["Rip"] = "Rip",
-    ["Mangle (Cat)"] = "Mangle (Cat)",
-    ["Mangle (Bear)"] = "Mangle (Bear)",
-    ["Trauma"] = "Trauma",
-    ["Faerie Fire"] = "Faerie Fire",
-    ["Clearcasting"] = "Clearcasting",
-    ["Savage Roar"] = "Savage Roar",
-    ["Tiger's Fury"] = "Tiger's Fury",
-    ["Berserk"] = "Berserk",
-    ["Shred"] = "Shred",
-    ["Ferocious Bite"] = "Ferocious Bite",
-    ["Faerie Fire (Feral)"] = "Faerie Fire (Feral)",
-    ["Cat Form"] = "Cat Form",
-    ["Sting"] = "Sting",
-    ["Acid Spit"] = "Acid Spit",
-    ["Expose Armor"] = "Expose Armor",
-    ["Sunder Armor"] = "Sunder Armor",
-    ["Heart of the Crusader"] = "Heart of the Crusader",
-    ["Master Poisoner"] = "Master Poisoner",
-    ["Totem of Wrath"] = "Totem of Wrath",
-    ["Lacerate"] = "Lacerate",
-    ["Maul"] = "Maul",
-    ["Demoralizing Roar"] = "Demoralizing Roar",
-    ["Demoralizing Shout"] = "Demoralizing Shout",
-    ["Curse of Weakness"] = "Curse of Weakness",
-    ["Vindication"] = "Vindication",
-    ["Barkskin"] = "Barkskin",
-    ["Survival Instincts"] = "Survival Instincts",
-    ["Swipe (Bear)"] = "Swipe (Bear)",
-    ["Growl"] = "Growl",
-    ["Dire Bear Form"] = "Dire Bear Form",
-    ["Enrage"] = "Enrage",
-    ["Heroic Presence (a)"] = "Heroic Presence (a)",
-    ["Heroic Presence (b)"] = "Heroic Presence (b)",
-    ["Maim"] = "Maim",
-    ["Bash"] = "Bash",
-}
-
--- Translate from Spells to actual Names
-function FbND_translateSpellIds(spellId)
-    if (spellId == nil) then
-        return nil
-    end
-    local spellName, _, _, _, _, _, _, _ = GetSpellInfo(spellId)
-    return spellName
-end
-
-
-FeralByNerdDruids.L["Rake"] = FbND_translateSpellIds(48574)
-FeralByNerdDruids.L["Rake Debuff"] = GetSpellInfo(1822)
-FeralByNerdDruids.L["Rip"] = FbND_translateSpellIds(49800)
-FeralByNerdDruids.L["Rip Debuff"] = GetSpellInfo(1079)
-FeralByNerdDruids.L["Mangle (Cat)"] = FbND_translateSpellIds(48566)
-FeralByNerdDruids.L["Mangle (Cat) Debuff"] = GetSpellInfo(33983)
-FeralByNerdDruids.L["Mangle (Bear)"] = FbND_translateSpellIds(48564)
-FeralByNerdDruids.L["Mangle (Bear) Debuff"] = GetSpellInfo(33987)
-FeralByNerdDruids.L["Trauma"] = GetSpellInfo(46857)
-FeralByNerdDruids.L["Faerie Fire"] = FbND_translateSpellIds(770)
-FeralByNerdDruids.L["Clearcasting"] = FbND_translateSpellIds(16870)
-FeralByNerdDruids.L["Savage Roar"] = GetSpellInfo(52610)
-FeralByNerdDruids.L["Tiger's Fury"] = FbND_translateSpellIds(50213)
-FeralByNerdDruids.L["Berserk"] = FbND_translateSpellIds(50334)
-FeralByNerdDruids.L["Shred"] = FbND_translateSpellIds(48572)
-FeralByNerdDruids.L["Ferocious Bite"] = FbND_translateSpellIds(48577)
-FeralByNerdDruids.L["Faerie Fire (Feral)"] = FbND_translateSpellIds(16857)
-FeralByNerdDruids.L["Cat Form"] = GetSpellInfo(768)
-FeralByNerdDruids.L["Sting"] = GetSpellInfo(56631)
-FeralByNerdDruids.L["Acid Spit"] = GetSpellInfo(55754)
-FeralByNerdDruids.L["Expose Armor"] = GetSpellInfo(8647)
-FeralByNerdDruids.L["Sunder Armor"] = GetSpellInfo(7386)
-FeralByNerdDruids.L["Heart of the Crusader"] = GetSpellInfo(20337)
-FeralByNerdDruids.L["Master Poisoner"] = GetSpellInfo(58410)
-FeralByNerdDruids.L["Totem of Wrath"] = GetSpellInfo(30706)
-FeralByNerdDruids.L["Lacerate"] = FbND_translateSpellIds(48568)
-FeralByNerdDruids.L["Lacerate Debuff"] = GetSpellInfo(33745)
-FeralByNerdDruids.L["Maul"] = FbND_translateSpellIds(48480)
-FeralByNerdDruids.L["Demoralizing Roar"] = FbND_translateSpellIds(48560)
-FeralByNerdDruids.L["Demoralizing Roar Debuff"] = GetSpellInfo(99)
-FeralByNerdDruids.L["Demoralizing Shout"] = GetSpellInfo(25203)
-FeralByNerdDruids.L["Curse of Weakness"] = GetSpellInfo(50511)
-FeralByNerdDruids.L["Vindication"] = GetSpellInfo(26017)
-FeralByNerdDruids.L["Barkskin"] = FbND_translateSpellIds(22812)
-FeralByNerdDruids.L["Survival Instincts"] = FbND_translateSpellIds(61336)
-FeralByNerdDruids.L["Swipe (Bear)"] = FbND_translateSpellIds(48562)
-FeralByNerdDruids.L["Growl"] = FbND_translateSpellIds(6795)
-FeralByNerdDruids.L["Dire Bear Form"] = GetSpellInfo(9634)
-FeralByNerdDruids.L["Enrage"] = FbND_translateSpellIds(5229)
-FeralByNerdDruids.L["Heroic Presence (a)"] = GetSpellInfo(28878)
-FeralByNerdDruids.L["Heroic Presence (b)"] = GetSpellInfo(6562)
-FeralByNerdDruids.L["Maim"] = FbND_translateSpellIds(49802)
-FeralByNerdDruids.L["Bash"] = FbND_translateSpellIds(8983)
-FeralByNerdDruids.L["Rend"] = GetSpellInfo(772)
-FeralByNerdDruids.L["Garrote"] = GetSpellInfo(703)
-FeralByNerdDruids.L["Rupture"] = GetSpellInfo(1943)
-FeralByNerdDruids.L["Pounce Bleed"] = GetSpellInfo(9007)
-FeralByNerdDruids.L["Savage Rend"] = GetSpellInfo(50498)
-FeralByNerdDruids.L["Rake (Pet)"] = GetSpellInfo(59881)
-FeralByNerdDruids.L["Deep Wounds"] = GetSpellInfo(12721)
-FeralByNerdDruids.L["First Aid"] = GetSpellInfo(3274)
-
 
 -- Txt List
 FeralByNerdDruids.textureList = {
@@ -515,11 +402,11 @@ end
 
 function FeralByNerdDruids:nextSpell(rotationData)
     if(rotationData.fairyFireDuration == nil and rotationData.fairyFireFeralDuration == nil and rotationData.faerieFireFeralReady) then
-        return FeralByNerdDruids.L["Faerie Fire (Feral)"]
+        return L["Faerie Fire (Feral)"]
     end
 
     if(rotationData.catForm == true and rotationData.tigersFuryReady and rotationData.berserkActive == false and rotationData.kingOfTheJungleEnergy < 100 - rotationData.catEnergy) then
-        return FeralByNerdDruids.L["Tiger's Fury"];
+        return L["Tiger's Fury"];
     end
 
     if(rotationData.catForm ~= true) then
@@ -546,34 +433,34 @@ function FeralByNerdDruids:nextSpell(rotationData)
         end
 
         if(emergencyLacerate) then
-            return FeralByNerdDruids.L["Lacerate"];
+            return L["Lacerate"];
         elseif(shiftNow) then
-            return FeralByNerdDruids.L["Cat Form"];
+            return L["Cat Form"];
         elseif(lacerateNow) then
-            return FeralByNerdDruids.L["Lacerate"];
+            return L["Lacerate"];
         elseif(rotationData.mangleBearReady) then
-            return FeralByNerdDruids.L["Mangle (Bear)"];
+            return L["Mangle (Bear)"];
         elseif(self:checkQueueMaul(rotationData)) then
-            return FeralByNerdDruids.L["Maul"];
+            return L["Maul"];
         end
     elseif (rotationData.emergencyBearweave) then
-        return FeralByNerdDruids.L["Dire Bear Form"];
+        return L["Dire Bear Form"];
     elseif (rotationData.berserkNow) then
-        return FeralByNerdDruids.L["Berserk"];
+        return L["Berserk"];
     elseif (rotationData.savageRoarNow) then
-        return FeralByNerdDruids.L["Savage Roar"];
+        return L["Savage Roar"];
     elseif (rotationData.ripNow) then
-        return FeralByNerdDruids.L["Rip"];
+        return L["Rip"];
     elseif (rotationData.biteNow) then
-        return FeralByNerdDruids.L["Ferocious Bite"];
+        return L["Ferocious Bite"];
     elseif (rotationData.rakeNow) then
-        return FeralByNerdDruids.L["Rake"];
+        return L["Rake"];
     elseif (rotationData.mangleNow) then
-        return FeralByNerdDruids.L["Mangle (Cat)"];
+        return L["Mangle (Cat)"];
     elseif (rotationData.bearweaveNow) then
-        return FeralByNerdDruids.L["Dire Bear Form"];
+        return L["Dire Bear Form"];
     else
-        return FeralByNerdDruids.L["Shred"];
+        return L["Shred"];
     end
 
     return nil;
@@ -632,8 +519,8 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     rotationData.comboPoints = GetComboPoints("player", "target");
     rotationData.bearRage = UnitPower("player", 1);
     rotationData.encounterTimeRemaining = self:estimatedFightLength();
-    local catform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Cat Form"], "player", "HELPFUL")
-    local bearform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Dire Bear Form"], "player", "HELPFUL")
+    local catform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(L["Cat Form"], "player", "HELPFUL")
+    local bearform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(L["Dire Bear Form"], "player", "HELPFUL")
 
     if(catform ~= nil) then
         rotationData.catForm = true;
@@ -653,7 +540,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
 
     local spell = ""
 
-    start, duration, _, _ = GetSpellCooldown(FeralByNerdDruids.L["Rake"]);
+    start, duration, _, _ = GetSpellCooldown(L["Rake"]);
     rotationData.globalCooldown = math.max(start - currentTime + duration, 0);
 
     local omenOfClarity = 0
@@ -735,7 +622,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     end
 
 
-    name, _, _, _, _, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Clearcasting"], "player", "HELPFUL");
+    name, _, _, _, _, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Clearcasting"], "player", "HELPFUL");
     if name ~= nil then
         rotationData.omenOfClarity = expirationTime - currentTime
     else
@@ -748,17 +635,17 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         omenOfClarityDown = true;
     end
 
-    rotationData.mangleEnergy = GetSpellPowerCost(FeralByNerdDruids.L["Mangle (Cat)"])[1].cost
-    rotationData.shredEnergy = GetSpellPowerCost(FeralByNerdDruids.L["Shred"])[1].cost
-    rotationData.rakeEnergy = GetSpellPowerCost(FeralByNerdDruids.L["Rake"])[1].cost
-    rotationData.ripEnergy = GetSpellPowerCost(FeralByNerdDruids.L["Rip"])[1].cost
-    rotationData.savageRoarEnergy = GetSpellPowerCost(FeralByNerdDruids.L["Savage Roar"])[1].cost
-    rotationData.ferociousBiteEnergy = GetSpellPowerCost(FeralByNerdDruids.L["Ferocious Bite"])[1].cost
-    rotationData.mangleBearRage = GetSpellPowerCost(FeralByNerdDruids.L["Mangle (Bear)"])[1].cost
-    rotationData.lacerateRage = GetSpellPowerCost(FeralByNerdDruids.L["Lacerate"])[1].cost
-    rotationData.maulRage = GetSpellPowerCost(FeralByNerdDruids.L["Maul"])
+    rotationData.mangleEnergy = GetSpellPowerCost(L["Mangle (Cat)"])[1].cost
+    rotationData.shredEnergy = GetSpellPowerCost(L["Shred"])[1].cost
+    rotationData.rakeEnergy = GetSpellPowerCost(L["Rake"])[1].cost
+    rotationData.ripEnergy = GetSpellPowerCost(L["Rip"])[1].cost
+    rotationData.savageRoarEnergy = GetSpellPowerCost(L["Savage Roar"])[1].cost
+    rotationData.ferociousBiteEnergy = GetSpellPowerCost(L["Ferocious Bite"])[1].cost
+    rotationData.mangleBearRage = GetSpellPowerCost(L["Mangle (Bear)"])[1].cost
+    rotationData.lacerateRage = GetSpellPowerCost(L["Lacerate"])[1].cost
+    rotationData.maulRage = GetSpellPowerCost(L["Maul"])
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Rake Debuff"], "target", "PLAYER|HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Rake Debuff"], "target", "PLAYER|HARMFUL");
     if name ~= nil then
         rotationData.rakeDuration = expirationTime - currentTime
         rotationData.rakeActive = true;
@@ -767,7 +654,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.rakeActive = false;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Rip Debuff"], "target", "PLAYER|HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Rip Debuff"], "target", "PLAYER|HARMFUL");
     if name ~= nil then
         rotationData.ripDuration = expirationTime - currentTime
         rotationData.ripActive = true;
@@ -776,7 +663,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.ripActive = false;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Mangle (Cat) Debuff"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Mangle (Cat) Debuff"], "target", "HARMFUL");
     if name ~= nil then
         mangleCatDuration = expirationTime - currentTime
         mangleCatActive = true;
@@ -785,7 +672,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         mangleCatActive = false;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Mangle (Bear) Debuff"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Mangle (Bear) Debuff"], "target", "HARMFUL");
     if name ~= nil then
         mangleBearDuration = expirationTime - currentTime
         mangleBearActive = true;
@@ -794,7 +681,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         mangleBearActive = false;
     end
 
-    name, _, count, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Lacerate"], "target", "HARMFUL");
+    name, _, count, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Lacerate"], "target", "HARMFUL");
 
     if name ~= nil then
         rotationData.lacerateBearDuration = expirationTime - currentTime
@@ -806,7 +693,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.lacerateBearStacks = 0;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Trauma"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Trauma"], "target", "HARMFUL");
     if name ~= nil then
         traumaWarriorDuration = expirationTime - currentTime
         traumaWarriorActive = true;
@@ -829,21 +716,21 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.bleedDebuffDuration = nil;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Faerie Fire (Feral)"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Faerie Fire (Feral)"], "target", "HARMFUL");
     if name ~= nil then
         rotationData.fairyFireFeralDuration = expirationTime - currentTime
     else
         rotationData.fairyFireFeralDuration = nil;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Faerie Fire"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Faerie Fire"], "target", "HARMFUL");
     if name ~= nil then
         rotationData.fairyFireDuration = expirationTime - currentTime
     else
         rotationData.fairyFireDuration = nil;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Savage Roar"], "player", "HELPFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Savage Roar"], "player", "HELPFUL");
     if name ~= nil then
         rotationData.savageRoarActive = true;
         rotationData.savageRoarDuration = expirationTime - currentTime;
@@ -852,7 +739,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.savageRoarDuration = nil;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Berserk"], "player", "HELPFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Berserk"], "player", "HELPFUL");
     if name ~= nil then
         rotationData.berserkActive = true;
         rotationData.berserkDuration = expirationTime - currentTime;
@@ -861,7 +748,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.berserkDuration = nil;
     end
 
-    startTime, duration, _ = GetSpellCooldown(FeralByNerdDruids.L["Berserk"]);
+    startTime, duration, _ = GetSpellCooldown(L["Berserk"]);
     if(startTime == 0) then
         rotationData.berserkReady = true;
         rotationData.berserkCooldown = 0;
@@ -870,7 +757,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.berserkCooldown = startTime - currentTime + duration;
     end
 
-    startTime, duration, _ = GetSpellCooldown(FeralByNerdDruids.L["Mangle (Bear)"]);
+    startTime, duration, _ = GetSpellCooldown(L["Mangle (Bear)"]);
     if(startTime == 0) then
         rotationData.mangleBearReady = true;
         rotationData.mangleBearCooldown = 0;
@@ -879,7 +766,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.mangleBearCooldown = startTime - currentTime + duration;
     end
 
-    startTime, duration, _ = GetSpellCooldown(FeralByNerdDruids.L["Faerie Fire (Feral)"]);
+    startTime, duration, _ = GetSpellCooldown(L["Faerie Fire (Feral)"]);
     if(startTime == 0) then
         rotationData.faerieFireFeralReady = true;
         rotationData.faerieFireFeralCooldown = 0;
@@ -888,7 +775,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.faerieFireFeralCooldown = startTime - currentTime + duration;
     end
 
-    startTime, duration, _ = GetSpellCooldown(FeralByNerdDruids.L["Tiger's Fury"]);
+    startTime, duration, _ = GetSpellCooldown(L["Tiger's Fury"]);
     if(startTime == 0) then
         rotationData.tigersFuryReady = true;
         rotationData.tigersFuryCooldown = 0;
@@ -1047,12 +934,12 @@ end
 function FeralByNerdDruids:OnUpdate(elapsed)
     FeralByNerdDruids.timeSinceLastUpdate = FeralByNerdDruids.timeSinceLastUpdate + elapsed;
 
-    local start, duration = GetSpellCooldown(FeralByNerdDruids.L["Rake"])
+    local start, duration = GetSpellCooldown(L["Rake"])
     FeralByNerdDruids.globalCooldownFrame:SetCooldown(start, duration)
 
     while (FeralByNerdDruids.timeSinceLastUpdate >= FeralByNerdDruidsDB.updateInterval) do
-        local catform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Cat Form"], "player", "HELPFUL")
-        local bearform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruids.L["Dire Bear Form"], "player", "HELPFUL")
+        local catform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(L["Cat Form"], "player", "HELPFUL")
+        local bearform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(L["Dire Bear Form"], "player", "HELPFUL")
         local _, _, _, _, currRank, _ = GetTalentInfo(2, 27)
 
         if (((catform ~= nil) or (bearform ~= nil)) and currRank ~= 0) then
