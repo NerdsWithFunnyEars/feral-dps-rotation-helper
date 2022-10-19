@@ -9,6 +9,23 @@
 FeralByNerdDruidsFrames = {}
 FeralByNerdDruidsFrames.events = { };
 
+if not FeralByNerdDruidsDB then
+    FeralByNerdDruidsDB = {}
+end
+
+if not FeralByNerdDruidsDB.locked then
+    FeralByNerdDruidsDB.locked = false;
+end
+
+if not FeralByNerdDruidsDB.updateInterval then
+    FeralByNerdDruidsDB.updateInterval = 0.1;
+end
+
+if not FeralByNerdDruidsDB.scale then
+    FeralByNerdDruidsDB.scale = 0.7
+end
+
+
 FeralByNerdDruidsFrames.textureList = {
     ["bear"] = nil,
     ["current"] = nil,
@@ -84,7 +101,22 @@ mainFrame:SetScript("OnUpdate", function(self, elapsed)
     FeralByNerdDruidsFrames:OnUpdate(elapsed)
 end)
 
+mainFrame:SetScale(FeralByNerdDruidsDB.scale);
+
 FeralByNerdDruidsFrames.mainFrame = mainFrame;
+if(FeralByNerdDruidsDB.locked) then
+    FeralByNerdDruidsFrames.mainFrame:SetScript("OnMouseDown", nil)
+    FeralByNerdDruidsFrames.mainFrame:SetScript("OnMouseUp", nil)
+    FeralByNerdDruidsFrames.mainFrame:SetScript("OnDragStop", nil)
+    FeralByNerdDruidsFrames.mainFrame:SetBackdropColor(0, 0, 0, 0)
+    FeralByNerdDruidsFrames.mainFrame:EnableMouse(false)
+else
+    FeralByNerdDruidsFrames.mainFrame:SetScript("OnMouseDown", function(self) self:StartMoving() end)
+    FeralByNerdDruidsFrames.mainFrame:SetScript("OnMouseUp", function(self) self:StopMovingOrSizing() end)
+    FeralByNerdDruidsFrames.mainFrame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+    FeralByNerdDruidsFrames.mainFrame:SetBackdropColor(0, 0, 0, .4)
+    FeralByNerdDruidsFrames.mainFrame:EnableMouse(true)
+end
 ------------------------------------------------------------------------------------------------------------------------
 --- Main Suggestion Frame End
 
