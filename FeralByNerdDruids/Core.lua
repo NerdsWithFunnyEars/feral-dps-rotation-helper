@@ -4,14 +4,6 @@
 -- Core File - builds up the main addon
 ------------------------------------------------------------------------------------------------------------------------
 
-local _, playerClass = UnitClass("player")
-local playerLevel = UnitLevel("player")
-
-if (playerClass ~= "DRUID" or playerLevel < 80) then
-    print("Disabling Feral By Nerd Druids: You are not a druid or not level 80");
-    return
-end
-
 ------------------------------------------------------------------------------------------------------------------------
 
 -- Local Variables
@@ -32,6 +24,7 @@ FeralByNerdDruids.currentTarget.unitType = 0000;
 FeralByNerdDruids.currentTarget.hp = {}
 FeralByNerdDruids.currentTarget.time = {}
 FeralByNerdDruids.currentTarget.dps = {}
+FeralByNerdDruids.weavingType = "Mangleweave";
 
 
 
@@ -123,7 +116,13 @@ end
 -- 2 = Lacerate
 -- 3 = Flower
 function FeralByNerdDruids:getWeavingType()
-    return 2;
+    if(FeralByNerdDruids.weavingType == "Monocat") then
+        return 0;
+    elseif(FeralByNerdDruids.weavingType == "Mangleweave") then
+        return 1;
+    else
+        return 2;
+    end
 end
 
 -- Ported from https://github.com/wowsims/wotlk/
@@ -351,21 +350,15 @@ function FeralByNerdDruids:decideOnSpellInRotation()
 
     local strategyMinCombosForRip = 5;
     local strategyUseRake = true;
-    local strategyUseBite = false;
+    local strategyUseBite = FeralByNerdDruidsDB.useBite;
     local strategyBiteTime = 10.0;
     local strategyMinCombosForBite = 5;
-    local strategyMangleSpam = false;
-    local strategyBearMangle = true;
-    local strategyUseBerserk = true;
-    local strategyPrePopBerserk = false;
-    local strategyPreProcOmen = true;
-    local strategyBearWeave = true;
     local strategyBerserkBiteThreshold = 30;
-    local strategyLaceratePrio = false;
     local strategyLacerateTime = 10.0;
     local strategyPowerBear = false;
     local strategyMaxRoarClip = 10.0;
     local strategyEncounterEndThreshold = 10.0;
+
     local rakeMaxDuration = 9;
     local maxBerserkDuration = 15;
     local catLatency = 1.1;
@@ -726,6 +719,18 @@ function FeralByNerdDruids:decideOnSpellInRotation()
                 FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(true);
                 FeralByNerdDruidsFrames.textList["bear"]:SetText(nil);
                 FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
+            end
+        end
+        if(self:getWeavingType() == 1) then
+            FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(GetSpellTexture(L["Mangle (Bear)"]));
+            if(rotationData.mangleBearReady) then
+                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(false);
+                FeralByNerdDruidsFrames.textList["bear"]:SetText(nil);
+                FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
+            else
+                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(true);
+                FeralByNerdDruidsFrames.textList["bear"]:SetText(math.ceil(rotationData.mangleBearCooldown));
+                FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 1);
             end
         end
         FeralByNerdDruidsFrames.textureList["cat"]:SetTexture(GetSpellTexture(L["Tiger's Fury"]))

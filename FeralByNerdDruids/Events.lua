@@ -20,7 +20,8 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
         return
     end
     
-    FeralByNerdDruidsFrames:InitializeFrames()
+    FeralByNerdDruidsFrames:InitializeFrames();
+    FeralByNerdDruidsOptions:initializeOptionFrames();
 
     -- Default saved variables
     if not FeralByNerdDruidsDB then
@@ -30,6 +31,18 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
 
     if not FeralByNerdDruidsDB.updateInterval then
         FeralByNerdDruidsDB.updateInterval = 0.1
+    end
+
+    if not FeralByNerdDruidsDB.useBite then
+        FeralByNerdDruidsDB.useBite = false;
+    end
+
+    if not FeralByNerdDruidsDB.scale then
+        FeralByNerdDruidsDB.scale = 0.7
+    end
+
+    if not FeralByNerdDruidsDB.weaveType then
+        FeralByNerdDruidsDB.weaveType = "Mangleweave";
     end
 
     FeralByNerdDruidsFrames.mainFrame:SetScale(FeralByNerdDruidsDB.scale);
@@ -46,6 +59,15 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
         FeralByNerdDruidsFrames.mainFrame:SetBackdropColor(0, 0, 0, .4)
         FeralByNerdDruidsFrames.mainFrame:EnableMouse(true)
     end
+
+    FeralByNerdDruids.weavingType = FeralByNerdDruidsDB.weaveType;
+
+    SLASH_FERALBYNERDDRUIDS1 = "/fbnd";
+    SLASH_FERALBYNERDDRUIDS2 = "/feralbynerddruids";
+    SlashCmdList["FERALBYNERDDRUIDS"] = function(msg)
+        FeralByNerdDruidsOptions:openOptionsFrame();
+    end
+
 end
 
 function FeralByNerdDruidsFrames.events.PLAYER_ALIVE()

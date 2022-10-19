@@ -9,22 +9,6 @@
 FeralByNerdDruidsFrames = {}
 FeralByNerdDruidsFrames.events = { };
 
-if not FeralByNerdDruidsDB then
-    FeralByNerdDruidsDB = {}
-end
-
-if not FeralByNerdDruidsDB.locked then
-    FeralByNerdDruidsDB.locked = false;
-end
-
-if not FeralByNerdDruidsDB.updateInterval then
-    FeralByNerdDruidsDB.updateInterval = 0.1;
-end
-
-if not FeralByNerdDruidsDB.scale then
-    FeralByNerdDruidsDB.scale = 0.7
-end
-
 
 FeralByNerdDruidsFrames.textureList = {
     ["bear"] = nil,
