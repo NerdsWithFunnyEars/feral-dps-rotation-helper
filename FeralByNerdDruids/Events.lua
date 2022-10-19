@@ -28,6 +28,21 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
     if not FeralByNerdDruidsDB.updateInterval then
         FeralByNerdDruidsDB.updateInterval = 0.1
     end
+
+    mainFrame:SetScale(FeralByNerdDruidsDB.scale);
+    if(FeralByNerdDruidsDB.locked) then
+        FeralByNerdDruidsFrames.mainFrame:SetScript("OnMouseDown", nil)
+        FeralByNerdDruidsFrames.mainFrame:SetScript("OnMouseUp", nil)
+        FeralByNerdDruidsFrames.mainFrame:SetScript("OnDragStop", nil)
+        FeralByNerdDruidsFrames.mainFrame:SetBackdropColor(0, 0, 0, 0)
+        FeralByNerdDruidsFrames.mainFrame:EnableMouse(false)
+    else
+        FeralByNerdDruidsFrames.mainFrame:SetScript("OnMouseDown", function(self) self:StartMoving() end)
+        FeralByNerdDruidsFrames.mainFrame:SetScript("OnMouseUp", function(self) self:StopMovingOrSizing() end)
+        FeralByNerdDruidsFrames.mainFrame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+        FeralByNerdDruidsFrames.mainFrame:SetBackdropColor(0, 0, 0, .4)
+        FeralByNerdDruidsFrames.mainFrame:EnableMouse(true)
+    end
 end
 
 function FeralByNerdDruidsFrames.events.PLAYER_ALIVE()
