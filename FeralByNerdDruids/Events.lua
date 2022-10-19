@@ -29,7 +29,7 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
         FeralByNerdDruidsDB.updateInterval = 0.1
     end
 
-    mainFrame:SetScale(FeralByNerdDruidsDB.scale);
+    FeralByNerdDruidsFrames.mainFrame:SetScale(FeralByNerdDruidsDB.scale);
     if(FeralByNerdDruidsDB.locked) then
         FeralByNerdDruidsFrames.mainFrame:SetScript("OnMouseDown", nil)
         FeralByNerdDruidsFrames.mainFrame:SetScript("OnMouseUp", nil)
