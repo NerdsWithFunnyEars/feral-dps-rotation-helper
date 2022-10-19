@@ -17,7 +17,10 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
         FeralByNerdDruidsFrames.eventFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
         FeralByNerdDruidsFrames.eventFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
         FeralByNerdDruidsFrames.eventFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
+        return
     end
+    
+    FeralByNerdDruidsFrames:InitializeFrames()
 
     -- Default saved variables
     if not FeralByNerdDruidsDB then
