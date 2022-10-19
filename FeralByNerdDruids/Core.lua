@@ -498,7 +498,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.bleedDebuffDuration = mangleBearDuration;
     elseif(traumaWarriorActive) then
         rotationData.bleedDebuffActive = true;
-        rotationData.bleedDebuffDuration = traumaWarriorActive;
+        rotationData.bleedDebuffDuration = traumaWarriorDuration;
     else
         rotationData.bleedDebuffActive = false;
         rotationData.bleedDebuffDuration = nil;
