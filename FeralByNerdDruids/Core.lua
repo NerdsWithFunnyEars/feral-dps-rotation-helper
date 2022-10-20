@@ -214,8 +214,10 @@ function FeralByNerdDruids:nextSpell(rotationData)
             return L["Cat Form"];
         elseif(lacerateNow) then
             return L["Lacerate"];
-        elseif(rotationData.mangleBearReady) then
+        elseif(rotationData.mangleBearReady and rotationData.bearRage > rotationData.mangleBearRage) then
             return L["Mangle (Bear)"];
+        elseif (rotationData.bearRage > rotationData.lacerateRage) then
+            return L["Lacerate"];
         else
             return nil;
         end
