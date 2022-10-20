@@ -344,16 +344,14 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     start, duration, _, _ = GetSpellCooldown(L["Rake"]);
     rotationData.globalCooldown = math.max(start - currentTime + duration, 0);
 
-    local omenOfClarity = 0
-
 
     local mangleCatActive = false;
     local mangleBearActive = false;
     local traumaWarriorActive = false;
 
-    local mangleCatDuration = nil;
-    local mangleBearDuration = nil;
-    local traumaWarriorDuration = nil;
+    local mangleCatDuration;
+    local mangleBearDuration;
+    local traumaWarriorDuration;
 
 
     -- King of the Jungle
@@ -425,17 +423,6 @@ function FeralByNerdDruids:decideOnSpellInRotation()
 
     rotationData.strategyMaxRoarClip = strategyMaxRoarClip;
 
-    local mangleEnergy = 1;
-    local shredEnergy = 1;
-    local rakeEnergy = 1;
-    local ripEnergy = 1;
-    local savageRoarEnergy = 1;
-    local ferociousBiteEnergy = 1;
-
-    local mangleBearRage = 1;
-    local lacerateRage = 1;
-    local maulRage = 1;
-
     _, _, _, _, currRank, _ = GetTalentInfo(3, 2);
     local furorEnergyCap = math.min(20 * currRank, 85);
 
@@ -448,8 +435,6 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.omenOfClaritySkilled = false;
     end
 
-    local lacerate = 0;
-    local lacerateStack = 0;
     if(UnitLevel("target") == -1) then
         rotationData.missChance = math.max((2 + (83 - UnitLevel("player")) * 2) - GetCombatRatingBonus(CR_HIT_MELEE) + GetHitModifier(), 0);
     else
