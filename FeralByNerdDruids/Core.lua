@@ -237,7 +237,7 @@ function FeralByNerdDruids:nextSpell(rotationData)
         return L["Mangle (Cat)"];
     elseif (rotationData.bearweaveNow) then
         return L["Dire Bear Form"];
-    else
+    elseif(rotationData.excessEnergy >= rotationData.shredEnergy or rotationData.omenOfClarityDown == false) then
         return L["Shred"];
     end
 
@@ -673,7 +673,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
 
     local emergencyBearweave = self:getWeavingType() == 2 and rotationData.lacerateBearActive and rotationData.lacerateBearDuration < 2.5 + catLatency and (rotationData.lacerateBearDuration < rotationData.encounterTimeRemaining);
 
-    floatingEnergy = 0;
+    local floatingEnergy = 0;
 
     for key, value in pairs(pendingActions) do
         local delta = tonumber(key) / 0.1;
