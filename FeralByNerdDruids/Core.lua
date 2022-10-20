@@ -416,6 +416,8 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         omenOfClarityDown = true;
     end
 
+    rotationData.omenOfClarityDown = omenOfClarityDown;
+
     rotationData.mangleEnergy = GetSpellPowerCost(L["Mangle (Cat)"])[1].cost
     rotationData.shredEnergy = GetSpellPowerCost(L["Shred"])[1].cost
     rotationData.rakeEnergy = GetSpellPowerCost(L["Rake"])[1].cost
