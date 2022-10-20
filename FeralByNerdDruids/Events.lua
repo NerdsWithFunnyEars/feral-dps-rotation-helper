@@ -6,6 +6,8 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
     local _, playerClass = UnitClass("player")
     local playerLevel = UnitLevel("player")
 
+    FeralByNerdDruidsFrames.playerGUID = UnitGUID("player");
+
     if (playerClass ~= "DRUID" or playerLevel < 80) then
         FeralByNerdDruidsFrames.eventFrame:UnregisterEvent("PLAYER_ALIVE")
         FeralByNerdDruidsFrames.eventFrame:UnregisterEvent("ADDON_LOADED")
@@ -86,8 +88,14 @@ function FeralByNerdDruidsFrames.events.PLAYER_TARGET_CHANGED(...)
     end
 end
 
-function FeralByNerdDruidsFrames.events.COMBAT_LOG_EVENT_UNFILTERED(_, event, _, _, _, _, _, _, _, _, _, arg12, ...)
-    FeralByNerdDruidsFrames.eventFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+function FeralByNerdDruidsFrames.events.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
+    --
+    if(sourceGUID == FeralByNerdDruidsFrames.playerGUID and subevent == "SPELL_AURA_APPLIED") then
+        local _, spellName = ...;
+        if(spellName == L["Rip"]) then
+            FeralByNerdDruids.ripStartTime = timestamp;
+        end
+    end
 end
 
 function FeralByNerdDruidsFrames.events.COMBAT_RATING_UPDATE(_)

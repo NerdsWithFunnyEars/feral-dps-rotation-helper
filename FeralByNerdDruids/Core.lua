@@ -208,12 +208,23 @@ function FeralByNerdDruids:nextSpell(rotationData)
             shiftNow = shiftNow or rotationData.omenOfClarityDown == false;
         end
 
+        local powerBearNow = false;
+
+        if(rotationData.strategyPowerBear) then
+            powerBearNow = shiftNow == false and rotationData.bearRage < 10;
+        else
+            powerBearNow = false;
+            shiftNow = shiftNow or rotationData.bearRage < 10;
+        end
+
         if(emergencyLacerate) then
             return L["Lacerate"];
         elseif(shiftNow) then
             return L["Cat Form"];
         elseif(lacerateNow) then
             return L["Lacerate"];
+        elseif(powerBearNow) then
+            return L["Dire Bear Form"];
         elseif(rotationData.mangleBearReady and rotationData.bearRage > rotationData.mangleBearRage) then
             return L["Mangle (Bear)"];
         elseif (rotationData.bearRage > rotationData.lacerateRage) then
@@ -245,40 +256,17 @@ function FeralByNerdDruids:nextSpell(rotationData)
 end
 
 function FeralByNerdDruids:clipSavageRoar(rotationData)
-    if(rotationData.ripActive == false or (
-            (rotationData.ripDuration <= rotationData.savageRoarDuration or
-                rotationData.encounterTimeRemaining - rotationData.ripDuration < 10)
-        )) then
+    if(rotationData.ripActive == false or rotationData.encounterTimeRemaining - rotationData.ripDuration < 10) then
         return false;
     end
 
-    -- Max Rip Duration skipped for now
+    local ripEnd = FeralByNerdDruids.ripStartTime - time() + rotationData.maximumRipLength;
 
-    local availableTime = rotationData.ripDuration - rotationData.savageRoarDuration;
-    local expectedEnergyGain = 10 * availableTime;
-
-    if(rotationData.tigersFuryCooldown < rotationData.ripDuration) then
-        expectedEnergyGain = expectedEnergyGain + rotationData.kingOfTheJungleEnergy
+    if(rotationData.savageRoarDuration >= ripEnd + rotationData.strategyMaxRoarClip) then
+        return false;
     end
 
-    if(rotationData.omenOfClaritySkilled) then
-        expectedEnergyGain = (expectedEnergyGain + availableTime / rotationData.attackSpeed) * (3.5 / 60 * (1.0 - rotationData.missChance) * rotationData.shredEnergy)
-    end
-
-    if(rotationData.omenOfClarity > 0) then
-        expectedEnergyGain = expectedEnergyGain + rotationData.shredEnergy
-    end
-
-    local availableEnergy = rotationData.catEnergy - rotationData.savageRoarEnergy + expectedEnergyGain;
-    local cpPerBuilder = 1 + (GetCritChance() / 100);
-    local costPerBuilder = (rotationData.shredEnergy + rotationData.shredEnergy + rotationData.rakeEnergy) / 3 * (1 + 0.2 * rotationData.missChance);
-    local ripRefreshCost = 5 / cpPerBuilder * costPerBuilder + rotationData.ripEnergy;
-
-    if(ripRefreshCost <= availableEnergy) then
-        return false
-    end
-
-    return rotationData.savageRoarDuration <= rotationData.strategyMaxRoarClip
+    return (rotationData.maximumSavageRoarLength >= ripEnd + rotationData.strategyMaxRoarClip);
 end
 
 function isMaulQueued()
@@ -287,6 +275,30 @@ function isMaulQueued()
             return true;
         end
     end
+end
+
+function FeralByNerdDruids:hasSetBonus(setItemId, neededItemCount)
+    local SetSlots = { "Head", "Shoulder", "Chest", "Hands", "Legs" }
+    local setItemCount = 0;
+    for i = 1, #SetSlots do
+        local invSlotId, _, _ = GetInventorySlotInfo(SetSlots[i].."Slot");
+        local itemId, _ = GetInventoryItemID("player", invSlotId);
+        local _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, setID, _ = GetItemInfo(itemId);
+        if(setItemId == setID) then
+            setItemCount = setItemCount + 1;
+        end
+    end
+    return setItemCount >= neededItemCount;
+end
+
+function FeralByNerdDruids:hasGlyph(id)
+    for i = 1, 6 do
+        local _, _, glyphSpell = GetGlyphSocketInfo(i)
+        if glyphSpell == id then
+            return true
+        end
+    end
+    return false;
 end
 
 function FeralByNerdDruids:decideOnSpellInRotation()
@@ -358,8 +370,52 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     local strategyBerserkBiteThreshold = 30;
     local strategyLacerateTime = 10.0;
     local strategyPowerBear = false;
-    local strategyMaxRoarClip = 10.0;
+    if(self:getWeavingType() == 1) then
+        strategyPowerBear = true;
+    end
+    rotationData.strategyPowerBear = strategyPowerBear;
+    local strategyMaxRoarClip = 14.0;
     local strategyEncounterEndThreshold = 10.0;
+
+    local dreamWalkerSet = 798;
+    local dreamWalkerSetBonusRip = 2;
+
+    local nightSongSet = 827;
+    local nightSongSetBonusRoar = 4;
+
+    local extraRipSecondsFromSet = 0;
+    local extraRoarSecondsFromSet = 0;
+
+    if(FeralByNerdDruids:hasSetBonus(dreamWalkerSet, dreamWalkerSetBonusRip)) then
+        extraRipSecondsFromSet = 4;
+    end
+
+    if(FeralByNerdDruids:hasSetBonus(nightSongSet, nightSongSetBonusRoar)) then
+        extraRoarSecondsFromSet = 8;
+    end
+
+    local extraRipSecondsFromShredGlyph = 0;
+    local extraRipSecondsFromRipGlyph = 0;
+
+    if(FeralByNerdDruids:hasGlyph(54815)) then
+        extraRipSecondsFromShredGlyph = 6;
+    end
+
+    if(FeralByNerdDruids:hasGlyph(54818)) then
+        extraRipSecondsFromRipGlyph = 4;
+    end
+
+    local savageRoarTimes = {
+        [0] = 0,
+        [1] = 14 + extraRoarSecondsFromSet,
+        [2] = 19 + extraRoarSecondsFromSet,
+        [3] = 24 + extraRoarSecondsFromSet,
+        [4] = 29 + extraRoarSecondsFromSet,
+        [5] = 34 + extraRoarSecondsFromSet
+    };
+
+    rotationData.maximumRipLength = 12 + extraRipSecondsFromSet + extraRipSecondsFromRipGlyph + extraRipSecondsFromShredGlyph;
+    rotationData.maximumSavageRoarLength = savageRoarTimes[rotationData.comboPoints];
 
     local rakeMaxDuration = 9;
     local maxBerserkDuration = 15;

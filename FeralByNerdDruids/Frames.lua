@@ -30,8 +30,12 @@ FeralByNerdDruidsFrames.textList = {
 -- Create Event Frame
 FeralByNerdDruidsFrames.eventFrame = CreateFrame("Frame")
 -- Hook all incoming events to it
-FeralByNerdDruidsFrames.eventFrame:SetScript("OnEvent", function(_, event, ...)
-    FeralByNerdDruidsFrames.events[event](...)
+FeralByNerdDruidsFrames.eventFrame:SetScript("OnEvent", function(self, event, ...)
+    if(event == "COMBAT_LOG_EVENT_UNFILTERED") then
+        FeralByNerdDruidsFrames.events[event](CombatLogGetCurrentEventInfo())
+    else
+        FeralByNerdDruidsFrames.events[event](...)
+    end
 end)
 
 -- Register the following Events to it
