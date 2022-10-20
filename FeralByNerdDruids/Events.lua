@@ -19,9 +19,6 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
         FeralByNerdDruidsFrames.eventFrame:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
         return
     end
-    
-    FeralByNerdDruidsFrames:InitializeFrames();
-    FeralByNerdDruidsOptions:initializeOptionFrames();
 
     -- Default saved variables
     if not FeralByNerdDruidsDB then
@@ -44,6 +41,9 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
     if not FeralByNerdDruidsDB.weaveType then
         FeralByNerdDruidsDB.weaveType = "Mangleweave";
     end
+
+    FeralByNerdDruidsFrames:InitializeFrames();
+    FeralByNerdDruidsOptions:initializeOptionFrames();
 
     FeralByNerdDruidsFrames.mainFrame:SetScale(FeralByNerdDruidsDB.scale);
     if(FeralByNerdDruidsDB.locked) then
