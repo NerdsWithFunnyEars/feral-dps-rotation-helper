@@ -21,9 +21,11 @@ function FeralByNerdDruidsOptions:ToggleUseBite()
     end
 end
 
-function FeralByNerdDruidsOptions:changeWeavingType(type)
+function FeralByNerdDruidsOptions:changeWeavingType(type, default)
     print("FeralByNightDruids: Set weaving type to: ", type);
-    FeralByNerdDruidsDB.weaveType = type;
+    if(default) then
+        FeralByNerdDruidsDB.weaveType = type;
+    end
     FeralByNerdDruids.weavingType = type;
 end
 
@@ -160,7 +162,7 @@ function FeralByNerdDruidsOptions:initializeOptionFrames()
         ['items'] = { 'Monocat', 'Mangleweave', 'Lacerateweave' },
         ['defaultVal'] = FeralByNerdDruidsOptions:GetWeavingType(),
         ['changeFunc'] = function(_, dropdown_val)
-            FeralByNerdDruidsOptions:changeWeavingType(dropdown_val);
+            FeralByNerdDruidsOptions:changeWeavingType(dropdown_val, true);
         end
     }
 

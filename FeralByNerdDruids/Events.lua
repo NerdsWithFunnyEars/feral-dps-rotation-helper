@@ -44,6 +44,10 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
         FeralByNerdDruidsDB.weaveType = "Mangleweave";
     end
 
+    if not FeralByNerdDruidsDB.targetStrategy then
+        FeralByNerdDruidsDB.targetStrategy = { };
+    end
+
     FeralByNerdDruidsFrames:InitializeFrames();
     FeralByNerdDruidsOptions:initializeOptionFrames();
 
@@ -67,7 +71,33 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
     SLASH_FERALBYNERDDRUIDS1 = "/fbnd";
     SLASH_FERALBYNERDDRUIDS2 = "/feralbynerddruids";
     SlashCmdList["FERALBYNERDDRUIDS"] = function(msg)
-        FeralByNerdDruidsOptions:openOptionsFrame();
+        if(msg == "lw") then
+            FeralByNerdDruidsOptions:changeWeavingType("Lacerateweave", true);
+        elseif(msg == "mw") then
+            FeralByNerdDruidsOptions:changeWeavingType("Mangleweave", true);
+        elseif(msg == "mc") then
+            FeralByNerdDruidsOptions:changeWeavingType("Monocat", true);
+        elseif(msg == "target lw") then
+            local targetName = UnitName("target");
+            if(targetName) then
+                FeralByNerdDruidsDB.targetStrategy[targetName] = "Lacerateweave";
+                FeralByNerdDruidsOptions:changeWeavingType("Lacerateweave", false)
+            end
+        elseif(msg == "target mw") then
+            local targetName = UnitName("target");
+            if(targetName) then
+                FeralByNerdDruidsDB.targetStrategy[targetName] = "Mangleweave";
+                FeralByNerdDruidsOptions:changeWeavingType("Mangleweave", false);
+            end
+        elseif(msg == "target mc") then
+            local targetName = UnitName("target");
+            if(targetName) then
+                FeralByNerdDruidsDB.targetStrategy[targetName] = "Monocat";
+                FeralByNerdDruidsOptions:changeWeavingType("Monocat", false);
+            end
+        else
+            FeralByNerdDruidsOptions:openOptionsFrame();
+        end
     end
 
 end
@@ -82,8 +112,19 @@ end
 
 function FeralByNerdDruidsFrames.events.PLAYER_TARGET_CHANGED(...)
     if UnitGUID("target") then
+        local unitName = UnitName("target");
+        if(FeralByNerdDruidsDB.targetStrategy[unitName] ~= nil and FeralByNerdDruidsDB.targetStrategy[unitName] ~= FeralByNerdDruidsDB.weaveType) then
+            FeralByNerdDruidsOptions:changeWeavingType(FeralByNerdDruidsDB.targetStrategy[unitName], false);
+        else
+            if(FeralByNerdDruids.weavingType ~= FeralByNerdDruidsDB.weaveType) then
+                FeralByNerdDruidsOptions:changeWeavingType(FeralByNerdDruidsDB.weaveType, false);
+            end
+        end
         FeralByNerdDruids.currentTarget.guid = UnitGUID("target")
     else
+        if(FeralByNerdDruids.weavingType ~= FeralByNerdDruidsDB.weaveType) then
+            FeralByNerdDruidsOptions:changeWeavingType(FeralByNerdDruidsDB.weaveType, false);
+        end
         FeralByNerdDruids.currentTarget.guid = "A"
     end
 end
