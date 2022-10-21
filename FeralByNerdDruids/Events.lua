@@ -95,8 +95,17 @@ function FeralByNerdDruidsFrames.events.ADDON_LOADED(addon)
                 FeralByNerdDruidsDB.targetStrategy[targetName] = "Monocat";
                 FeralByNerdDruidsOptions:changeWeavingType("Monocat", false);
             end
-        else
+        elseif(msg == "options") then
             FeralByNerdDruidsOptions:openOptionsFrame();
+        else
+            print("|cffFF0000/fbnd|r |cff0000FFoptions:|r Open settings");
+            print("|cffFF0000/fbnd|r |cff0000FFlw:|r Set default strategy to Lacerateweave");
+            print("|cffFF0000/fbnd|r |cff0000FFmw:|r Set default strategy to Mangleweave");
+            print("|cffFF0000/fbnd|r |cff0000FFmc:|r Set default strategy to Monocat");
+            print("|cffFF0000/fbnd|r |cff0000FFtarget lw:|r Set strategy for current target to Lacerateweave (Saved)");
+            print("|cffFF0000/fbnd|r |cff0000FFtarget mw:|r Set strategy for current target to Mangleweave  (Saved)");
+            print("|cffFF0000/fbnd|r |cff0000FFtarget mc:|r Set strategy for current target to Monocat (Saved)");
+
         end
     end
 
