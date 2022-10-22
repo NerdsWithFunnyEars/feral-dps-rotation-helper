@@ -20,50 +20,16 @@ FeralByNerdDruids.timeSinceLastUpdate = 0;
 FeralByNerdDruids.currentTarget = {};
 FeralByNerdDruids.currentTarget.guid = "A";
 FeralByNerdDruids.currentTarget.id = 0000;
-FeralByNerdDruids.currentTarget.unitType = 0000;
-FeralByNerdDruids.currentTarget.hp = {}
-FeralByNerdDruids.currentTarget.time = {}
-FeralByNerdDruids.currentTarget.dps = {}
+FeralByNerdDruids.sTime = 0;
+FeralByNerdDruids.pHealth = 0;
+FeralByNerdDruids.pTime = 0;
+FeralByNerdDruids.damage = 0;
+FeralByNerdDruids.tTillZero = 999999;
+FeralByNerdDruids.lastSwingTimer = 0;
+FeralByNerdDruids.timeToNextSwing = 0;
+
 FeralByNerdDruids.weavingType = "Mangleweave";
 
-
-
-FeralByNerdDruids.currentTarget.hp = {
-    [1] = 0,
-    [2] = 0,
-    [3] = 0,
-    [4] = 0,
-    [5] = 0,
-    [6] = 0,
-    [7] = 0,
-    [8] = 0,
-    [9] = 0,
-    [10] = 0,
-}
-FeralByNerdDruids.currentTarget.dps = {
-    [1] = 0,
-    [2] = 0,
-    [3] = 0,
-    [4] = 0,
-    [5] = 0,
-    [6] = 0,
-    [7] = 0,
-    [8] = 0,
-    [9] = 0,
-    [10] = 0,
-}
-FeralByNerdDruids.currentTarget.time = {
-    [1] = 1,
-    [2] = 2,
-    [3] = 3,
-    [4] = 4,
-    [5] = 5,
-    [6] = 6,
-    [7] = 7,
-    [8] = 8,
-    [9] = 9,
-    [10] = 10,
-}
 
 -- Txt List
 FeralByNerdDruids.textureList = {
@@ -77,36 +43,24 @@ FeralByNerdDruids.textureList = {
 -- Local Variables end
 
 function FeralByNerdDruids:estimatedFightLength()
-    local currentTime = GetTime();
-
-    for i = 1, 9 do
-        FeralByNerdDruids.currentTarget.hp[i] = FeralByNerdDruids.currentTarget.hp[i + 1]
-        FeralByNerdDruids.currentTarget.time[i] = FeralByNerdDruids.currentTarget.time[i + 1]
-        FeralByNerdDruids.currentTarget.dps[i] = FeralByNerdDruids.currentTarget.dps[i + 1]
-    end
-
-    FeralByNerdDruids.currentTarget.hp[10] = UnitHealth("target")
-
-    if FeralByNerdDruids.currentTarget.hp[10] > FeralByNerdDruids.currentTarget.hp[9] then
-        for i = 1, 9 do
-            FeralByNerdDruids.currentTarget.hp[i] = FeralByNerdDruids.currentTarget.hp[10] - 10 * (10 - i)
+    local cHealth = UnitHealth("target")
+    local hSegment = FeralByNerdDruids.pHealth - cHealth
+    if hSegment ~= 0 then -- target has been healed or damaged
+        local cTime = GetTime()
+        local tTime = cTime - FeralByNerdDruids.sTime
+        local tSegment = cTime - FeralByNerdDruids.pTime
+        FeralByNerdDruids.damage = FeralByNerdDruids.damage + hSegment
+        if tSegment >= 1 then -- one or more seconds has passed; update time till zero
+            local rate = FeralByNerdDruids.damage / tTime
+            FeralByNerdDruids.tTillZero = cHealth / rate
+            FeralByNerdDruids.pTime = cTime
         end
+        FeralByNerdDruids.pHealth = cHealth
     end
-    FeralByNerdDruids.currentTarget.time[10] = currentTime
-    FeralByNerdDruids.currentTarget.dps[10] = (FeralByNerdDruids.currentTarget.hp[9] - FeralByNerdDruids.currentTarget.hp[10]) / (FeralByNerdDruids.currentTarget.time[10] - FeralByNerdDruids.currentTarget.time[9])
-
-    FeralByNerdDruids.damage = 0.15 * FeralByNerdDruids.currentTarget.dps[10] + 0.14 * FeralByNerdDruids.currentTarget.dps[9]
-            + 0.13 * FeralByNerdDruids.currentTarget.dps[8] + 0.12 * FeralByNerdDruids.currentTarget.dps[7]
-            + 0.11 * FeralByNerdDruids.currentTarget.dps[6] + 0.10 * FeralByNerdDruids.currentTarget.dps[5] + 0.08 * FeralByNerdDruids.currentTarget.dps[4]
-            + 0.07 * FeralByNerdDruids.currentTarget.dps[3] + 0.06 * FeralByNerdDruids.currentTarget.dps[2] + 0.04 * FeralByNerdDruids.currentTarget.dps[1];
-
-    if (FeralByNerdDruids.currentTarget.hp[1] > 0 and FeralByNerdDruids.currentTarget.dps[1] > 0) then
-        if(FeralByNerdDruids.damage == 0) then
-            FeralByNerdDruids.damage = 1;
-        end
-        return UnitHealth("target") / FeralByNerdDruids.damage
+    if(FeralByNerdDruids.tTillZero == 0 or string.find(UnitName("target"), "Training Dummy")) then
+        return 999999;
     else
-        return 9999999
+        return FeralByNerdDruids.tTillZero;
     end
 end
 
@@ -260,7 +214,7 @@ function FeralByNerdDruids:clipSavageRoar(rotationData)
         return false;
     end
 
-    local ripEnd = FeralByNerdDruids.ripStartTime - time() + rotationData.maximumRipLength;
+    local ripEnd = FeralByNerdDruids.ripStartTime - GetTime() + rotationData.maximumRipLength;
 
     if(rotationData.savageRoarDuration >= ripEnd + rotationData.strategyMaxRoarClip) then
         return false;
@@ -312,6 +266,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
         FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 0);
         FeralByNerdDruidsFrames.textList["berserk"]:SetTextColor(1, 0, 0, 0);
+        FeralByNerdDruidsFrames.textList["next"]:SetTextColor(1, 0, 0, 0);
         return
     end
 
@@ -583,6 +538,15 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.berserkCooldown = startTime - currentTime + duration;
     end
 
+    startTime, duration, _ = GetSpellCooldown(L["Enrage"]);
+    if(startTime == 0 or ((startTime - currentTime + duration - rotationData.globalCooldown) <= 0)) then
+        rotationData.enrageReady = true;
+        rotationData.enrageCooldown = 0;
+    else
+        rotationData.enrageReady = false;
+        rotationData.enrageCooldown = startTime - currentTime + duration;
+    end
+
     startTime, duration, _ = GetSpellCooldown(L["Mangle (Bear)"]);
     if(startTime == 0 or (startTime - currentTime + duration - rotationData.globalCooldown <= 0)) then
         rotationData.mangleBearReady = true;
@@ -653,6 +617,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
 
     local ripRefreshPending = false;
     local pendingActions = { };
+    local pendingActionIcons = { };
     local ripCost = 0;
     local rakeCost = 0;
     local mangleCost = 0;
@@ -666,6 +631,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
             ripCost = rotationData.ripEnergy;
         end
         pendingActions[tostring(rotationData.ripDuration)] = ripCost;
+        pendingActionIcons[tostring(rotationData.ripDuration)] = L["Rip"];
         ripRefreshPending = true;
     end
 
@@ -676,6 +642,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
             rakeCost = rotationData.rakeEnergy;
         end
         pendingActions[tostring(rotationData.rakeDuration)] = rakeCost;
+        pendingActionIcons[tostring(rotationData.rakeDuration)] = L["Rake"];
     end
 
     if(rotationData.bleedDebuffActive and (rotationData.bleedDebuffDuration < rotationData.encounterTimeRemaining - 1)) then
@@ -685,6 +652,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
             mangleCost = rotationData.mangleEnergy;
         end
         pendingActions[tostring(rotationData.bleedDebuffDuration)] = mangleCost;
+        pendingActionIcons[tostring(rotationData.bleedDebuffDuration)] = L["Mangle"];
     end
 
     if(rotationData.savageRoarActive) then
@@ -694,8 +662,16 @@ function FeralByNerdDruids:decideOnSpellInRotation()
             savageRoarCost = rotationData.savageRoarEnergy;
         end
         pendingActions[tostring(rotationData.savageRoarDuration)] = savageRoarCost;
+        pendingActionIcons[tostring(rotationData.bleedDebuffDuration)] = L["Savage Roar"];
     end
-    table.sort(pendingActions)
+
+    local pendingActionKeys = {}
+    local pendingActionIconKeys = {}
+    for k in pairs(pendingActions) do table.insert(pendingActionKeys, k) end
+    table.sort(pendingActionKeys);
+
+    for k in pairs(pendingActionIcons) do table.insert(pendingActionIconKeys, k) end
+    table.sort(pendingActionIconKeys);
 
     local weaveEnergy = furorEnergyCap - 30 - 20 * catLatency;
 
@@ -716,12 +692,21 @@ function FeralByNerdDruids:decideOnSpellInRotation()
 
     local floatingEnergy = 0;
 
-    for key, value in pairs(pendingActions) do
+    for _, key in ipairs(pendingActionKeys) do
         local delta = tonumber(key) / 0.1;
-        if(delta < value) then
-            floatingEnergy = floatingEnergy + value - delta;
+        if(delta < pendingActions[key]) then
+            floatingEnergy = floatingEnergy + pendingActions[key] - delta;
         end
     end
+
+    local nextActionIcon;
+    local nextActionTime;
+
+    for _, key in ipairs(pendingActionIconKeys) do
+        nextActionIcon = pendingActionIcons[key];
+        nextActionTime = tonumber(key);
+    end
+
 
     local excessEnergy = rotationData.catEnergy - floatingEnergy;
     rotationData.bearweaveNow = bearweaveNow;
@@ -730,7 +715,24 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     rotationData.ripRefreshPending = ripRefreshPending;
 
     spell = FeralByNerdDruids:nextSpell(rotationData)
-    FeralByNerdDruidsFrames.textureList["current"]:SetTexture(GetSpellTexture(spell));
+    if(rotationData.globalCooldown <= FeralByNerdDruids.timeToNextSwing) then
+        FeralByNerdDruidsFrames.textureList["current"]:SetTexture(GetSpellTexture(spell));
+    else
+        FeralByNerdDruidsFrames.textureList["current"]:SetTexture(nil);
+    end
+
+
+    FeralByNerdDruidsFrames.textureList["next"]:SetTexture(GetSpellTexture(L["Enrage"]));
+    if(rotationData.enrageReady) then
+        FeralByNerdDruidsFrames.textureList["next"]:SetDesaturated(false);
+        FeralByNerdDruidsFrames.textList["next"]:SetText(nil);
+        FeralByNerdDruidsFrames.textList["next"]:SetTextColor(1, 0, 0, 0);
+    else
+        FeralByNerdDruidsFrames.textureList["next"]:SetDesaturated(true);
+        FeralByNerdDruidsFrames.textList["next"]:SetText(math.ceil(rotationData.enrageCooldown));
+        FeralByNerdDruidsFrames.textList["next"]:SetTextColor(1, 0, 0, 1);
+    end
+
     if(rotationData.bearForm) then
         FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
         if(self:checkQueueMaul(rotationData)) then

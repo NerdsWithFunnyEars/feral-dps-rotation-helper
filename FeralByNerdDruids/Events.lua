@@ -130,6 +130,11 @@ function FeralByNerdDruidsFrames.events.PLAYER_TARGET_CHANGED(...)
             end
         end
         FeralByNerdDruids.currentTarget.guid = UnitGUID("target")
+        if(UnitAffectingCombat("player")) then
+            FeralByNerdDruids.sTime = GetTime();
+            FeralByNerdDruids.damage = 0;
+            FeralByNerdDruids.pHealth = UnitHealth("target");
+        end
     else
         if(FeralByNerdDruids.weavingType ~= FeralByNerdDruidsDB.weaveType) then
             FeralByNerdDruidsOptions:changeWeavingType(FeralByNerdDruidsDB.weaveType, false);
@@ -138,13 +143,17 @@ function FeralByNerdDruidsFrames.events.PLAYER_TARGET_CHANGED(...)
     end
 end
 
-function FeralByNerdDruidsFrames.events.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
+function FeralByNerdDruidsFrames.events.COMBAT_LOG_EVENT_UNFILTERED(_, subevent, _, sourceGUID, _, _, _, _, _, _, _, ...)
     --
     if(sourceGUID == FeralByNerdDruidsFrames.playerGUID and subevent == "SPELL_AURA_APPLIED") then
         local _, spellName = ...;
         if(spellName == L["Rip"]) then
-            FeralByNerdDruids.ripStartTime = timestamp;
+            FeralByNerdDruids.ripStartTime = GetTime();
         end
+    end
+
+    if(sourceGUID == FeralByNerdDruidsFrames.playerGUID and (subevent == "SWING_DAMAGE" or subevent == "SWING_MISSED")) then
+        FeralByNerdDruids.lastSwingTimer = GetTime();
     end
 end
 
@@ -153,17 +162,14 @@ function FeralByNerdDruidsFrames.events.COMBAT_RATING_UPDATE(_)
 end
 
 function FeralByNerdDruidsFrames.events.PLAYER_REGEN_ENABLED(...)
-    FeralByNerdDruids.damage = nil;
-
-    for i = 1, 10 do
-        FeralByNerdDruids.currentTarget.hp[i] = 0;
-        FeralByNerdDruids.currentTarget.dps[i] = 0;
-        FeralByNerdDruids.currentTarget.time[i] = 0;
-    end
+    FeralByNerdDruids.damage = 0;
 end
 
 function FeralByNerdDruidsFrames.events.PLAYER_REGEN_DISABLED(...)
-    FeralByNerdDruidsFrames.eventFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+    FeralByNerdDruids.sTime = GetTime();
+    FeralByNerdDruids.damage = 0;
+    FeralByNerdDruids.pHealth = UnitHealth("target");
+    FeralByNerdDruids.pTime = GetTime();
 end
 
 function FeralByNerdDruidsFrames.events.PLAYER_EQUIPMENT_CHANGED(...)

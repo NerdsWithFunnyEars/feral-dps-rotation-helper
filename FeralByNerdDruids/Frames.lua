@@ -22,6 +22,7 @@ FeralByNerdDruidsFrames.textList = {
     ["bear"] = nil,
     ["cat"] = nil,
     ["berserk"] = nil,
+    ["next"] = nil
 }
 
 
@@ -30,7 +31,7 @@ FeralByNerdDruidsFrames.textList = {
 -- Create Event Frame
 FeralByNerdDruidsFrames.eventFrame = CreateFrame("Frame")
 -- Hook all incoming events to it
-FeralByNerdDruidsFrames.eventFrame:SetScript("OnEvent", function(self, event, ...)
+FeralByNerdDruidsFrames.eventFrame:SetScript("OnEvent", function(_, event, ...)
     if(event == "COMBAT_LOG_EVENT_UNFILTERED") then
         FeralByNerdDruidsFrames.events[event](CombatLogGetCurrentEventInfo())
     else
@@ -85,7 +86,7 @@ function FeralByNerdDruidsFrames:InitializeFrames()
     end)
     mainFrame:SetPoint("CENTER")
 
-    mainFrame:SetScript("OnUpdate", function(self, elapsed)
+    mainFrame:SetScript("OnUpdate", function(_, elapsed)
         FeralByNerdDruidsFrames:OnUpdate(elapsed)
     end)
 
@@ -118,6 +119,12 @@ function FeralByNerdDruidsFrames:InitializeFrames()
     t:SetAllPoints(mainFrame_next)
     t:SetAlpha(.8)
     mainFrame_next.texture = t
+    local text = mainFrame_next:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    text:SetAllPoints();
+    text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE, MONOCHROME")
+    text:SetTextColor(1, 0, 0, 1);
+    mainFrame_next.text = text;
+    FeralByNerdDruidsFrames.textList["next"] = text;
     FeralByNerdDruidsFrames.textureList["next"] = t
 
     -- Display Frame for Bear Information, bottom left on the main Frame
@@ -131,7 +138,7 @@ function FeralByNerdDruidsFrames:InitializeFrames()
     t:SetAlpha(.8)
     mainFrame_bear.texture = t
     FeralByNerdDruidsFrames.textureList["bear"] = t
-    local text = mainFrame_bear:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    text = mainFrame_bear:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     text:SetAllPoints();
     text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE, MONOCHROME")
     text:SetTextColor(1, 0, 0, 1);
@@ -193,6 +200,14 @@ function FeralByNerdDruidsFrames:OnUpdate(elapsed)
 
     local start, duration = GetSpellCooldown(L["Rake"])
     FeralByNerdDruidsFrames.globalCooldownFrame:SetCooldown(start, duration)
+
+    local attackSpeed = UnitAttackSpeed("player");
+
+    if(FeralByNerdDruids.lastSwingTimer ~= 0) then
+        FeralByNerdDruids.timeToNextSwing = FeralByNerdDruids.lastSwingTimer - GetTime() + attackSpeed;
+    else
+        FeralByNerdDruids.timeToNextSwing = 0;
+    end
 
     while (FeralByNerdDruids.timeSinceLastUpdate >= FeralByNerdDruidsDB.updateInterval) do
         local catform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(L["Cat Form"], "player", "HELPFUL")
