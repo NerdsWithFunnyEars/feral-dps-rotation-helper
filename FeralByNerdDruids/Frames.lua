@@ -199,12 +199,11 @@ function FeralByNerdDruidsFrames:OnUpdate(elapsed)
     FeralByNerdDruids.timeSinceLastUpdate = FeralByNerdDruids.timeSinceLastUpdate + elapsed;
 
     local start, duration = GetSpellCooldown(L["Rake"])
-    FeralByNerdDruidsFrames.globalCooldownFrame:SetCooldown(start, duration)
 
     local attackSpeed = UnitAttackSpeed("player");
 
     if(FeralByNerdDruids.lastSwingTimer ~= 0) then
-        FeralByNerdDruids.timeToNextSwing = FeralByNerdDruids.lastSwingTimer - GetTime() + attackSpeed;
+        FeralByNerdDruids.timeToNextSwing = math.max(FeralByNerdDruids.lastSwingTimer - GetTime() + attackSpeed, 0);
     else
         FeralByNerdDruids.timeToNextSwing = 0;
     end
@@ -215,7 +214,18 @@ function FeralByNerdDruidsFrames:OnUpdate(elapsed)
         local _, _, _, _, currRank, _ = GetTalentInfo(2, 27)
 
         if (((catform ~= nil) or (bearform ~= nil)) and currRank ~= 0) then
+            FeralByNerdDruidsFrames.globalCooldownFrame:SetCooldown(start, duration)
             FeralByNerdDruids:decideOnSpellInRotation()
+        else
+            FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(nil)
+            FeralByNerdDruidsFrames.textureList["current"]:SetTexture(nil)
+            FeralByNerdDruidsFrames.textureList["next"]:SetTexture(nil)
+            FeralByNerdDruidsFrames.textureList["cat"]:SetTexture(nil)
+            FeralByNerdDruidsFrames.textureList["berserk"]:SetTexture(nil)
+            FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
+            FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 0);
+            FeralByNerdDruidsFrames.textList["berserk"]:SetTextColor(1, 0, 0, 0);
+            FeralByNerdDruidsFrames.textList["next"]:SetTextColor(1, 0, 0, 0);
         end
         FeralByNerdDruids.timeSinceLastUpdate = FeralByNerdDruids.timeSinceLastUpdate - FeralByNerdDruidsDB.updateInterval;
     end

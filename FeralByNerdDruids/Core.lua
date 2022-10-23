@@ -84,7 +84,7 @@ function FeralByNerdDruids:checkQueueMaul(rotationData)
     local furorCap = rotationData.furorEnergyCap;
     local ripRefreshPending = rotationData.ripRefreshPending;
     local playerInputDelay = rotationData.catLatency;
-    local energyLeeway = furorCap - 15 - 10 * (rotationData.globalCooldown + playerInputDelay);
+    local energyLeeway = furorCap - 15 - 10 * (rotationData.globalCooldown + playerInputDelay - 1);
     local hasToShift = rotationData.catEnergy > energyLeeway;
 
     if(ripRefreshPending) then
@@ -688,7 +688,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         bearweaveNow = rotationData.tigersFuryCooldown >= weaveEnd;
     end
 
-    local emergencyBearweave = self:getWeavingType() == 2 and rotationData.lacerateBearActive and rotationData.lacerateBearDuration < 2.5 + catLatency and (rotationData.lacerateBearDuration < rotationData.encounterTimeRemaining);
+    local emergencyBearweave = self:getWeavingType() == 2 and rotationData.lacerateBearActive and rotationData.lacerateBearDuration < 2.5 * rotationData.catLatency and (rotationData.lacerateBearDuration < rotationData.encounterTimeRemaining);
 
     local floatingEnergy = 0;
 
@@ -716,11 +716,12 @@ function FeralByNerdDruids:decideOnSpellInRotation()
 
     spell = FeralByNerdDruids:nextSpell(rotationData)
     if(rotationData.globalCooldown <= FeralByNerdDruids.timeToNextSwing) then
-        FeralByNerdDruidsFrames.textureList["current"]:SetTexture(GetSpellTexture(spell));
+        FeralByNerdDruidsFrames.textureList["current"]:SetDesaturated(false);
     else
-        FeralByNerdDruidsFrames.textureList["current"]:SetTexture(nil);
+        FeralByNerdDruidsFrames.textureList["current"]:SetDesaturated(true);
     end
 
+    FeralByNerdDruidsFrames.textureList["current"]:SetTexture(GetSpellTexture(spell));
 
     FeralByNerdDruidsFrames.textureList["next"]:SetTexture(GetSpellTexture(L["Enrage"]));
     if(rotationData.enrageReady) then
