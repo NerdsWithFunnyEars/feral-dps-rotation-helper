@@ -124,7 +124,7 @@ end
 
 function FeralByNerdDruids:nextSpell(rotationData)
     if(rotationData.fairyFireDuration == nil and rotationData.fairyFireFeralDuration == nil and rotationData.faerieFireFeralReady) then
-        return L["Faerie Fire (Feral)"]
+        return FeralByNerdDruidsLocalization.L["Faerie Fire (Feral)"]
     end
 
     if(rotationData.catForm ~= true) then
@@ -160,36 +160,36 @@ function FeralByNerdDruids:nextSpell(rotationData)
         end
 
         if(emergencyLacerate) then
-            return L["Lacerate"];
+            return FeralByNerdDruidsLocalization.L["Lacerate"];
         elseif(shiftNow) then
-            return L["Cat Form"];
+            return FeralByNerdDruidsLocalization.L["Cat Form"];
         elseif(lacerateNow) then
-            return L["Lacerate"];
+            return FeralByNerdDruidsLocalization.L["Lacerate"];
         elseif(powerBearNow) then
-            return L["Dire Bear Form"];
+            return FeralByNerdDruidsLocalization.L["Dire Bear Form"];
         elseif(rotationData.mangleBearReady and rotationData.bearRage > rotationData.mangleBearRage) then
-            return L["Mangle (Bear)"];
+            return FeralByNerdDruidsLocalization.L["Mangle (Bear)"];
         elseif (rotationData.bearRage > rotationData.lacerateRage) then
-            return L["Lacerate"];
+            return FeralByNerdDruidsLocalization.L["Lacerate"];
         else
             return nil;
         end
     elseif (rotationData.emergencyBearweave) then
-        return L["Dire Bear Form"];
+        return FeralByNerdDruidsLocalization.L["Dire Bear Form"];
     elseif (rotationData.savageRoarNow) then
-        return L["Savage Roar"];
+        return FeralByNerdDruidsLocalization.L["Savage Roar"];
     elseif (rotationData.ripNow) then
-        return L["Rip"];
+        return FeralByNerdDruidsLocalization.L["Rip"];
     elseif (rotationData.biteNow) then
-        return L["Ferocious Bite"];
+        return FeralByNerdDruidsLocalization.L["Ferocious Bite"];
     elseif (rotationData.rakeNow) then
-        return L["Rake"];
+        return FeralByNerdDruidsLocalization.L["Rake"];
     elseif (rotationData.mangleNow) then
-        return L["Mangle (Cat)"];
+        return FeralByNerdDruidsLocalization.L["Mangle (Cat)"];
     elseif (rotationData.bearweaveNow) then
-        return L["Dire Bear Form"];
+        return FeralByNerdDruidsLocalization.L["Dire Bear Form"];
     elseif(rotationData.excessEnergy >= rotationData.shredEnergy or rotationData.omenOfClarityDown == false) then
-        return L["Shred"];
+        return FeralByNerdDruidsLocalization.L["Shred"];
     end
 
     if not rotationData.emergencyBearweave and rotationData.berserkNow then
@@ -216,7 +216,7 @@ end
 
 function isMaulQueued()
     for lActionSlot = 1, 120 do
-        if(IsCurrentAction(lActionSlot) and GetActionTexture(lActionSlot) == GetSpellTexture(L["Maul"])) then
+        if(IsCurrentAction(lActionSlot) and GetActionTexture(lActionSlot) == GetSpellTexture(FeralByNerdDruidsLocalization.L["Maul"])) then
             return true;
         end
     end
@@ -258,8 +258,8 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     rotationData.comboPoints = GetComboPoints("player", "target");
     rotationData.bearRage = UnitPower("player", 1);
     rotationData.encounterTimeRemaining = self:estimatedFightLength();
-    local catform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(L["Cat Form"], "player", "HELPFUL")
-    local bearform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(L["Dire Bear Form"], "player", "HELPFUL")
+    local catform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Cat Form"], "player", "HELPFUL")
+    local bearform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Dire Bear Form"], "player", "HELPFUL")
 
     if(catform ~= nil) then
         rotationData.catForm = true;
@@ -277,9 +277,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
 
     local currentTime = GetTime()
 
-    local spell = ""
-
-    start, duration, _, _ = GetSpellCooldown(L["Rake"]);
+    start, duration, _, _ = GetSpellCooldown(FeralByNerdDruidsLocalization.L["Rake"]);
     rotationData.globalCooldown = math.max(start - currentTime + duration, 0);
 
 
@@ -384,7 +382,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     end
 
 
-    name, _, _, _, _, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Clearcasting"], "player", "HELPFUL");
+    name, _, _, _, _, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Clearcasting"], "player", "HELPFUL");
     if name ~= nil then
         rotationData.omenOfClarity = expirationTime - currentTime
     else
@@ -399,17 +397,17 @@ function FeralByNerdDruids:decideOnSpellInRotation()
 
     rotationData.omenOfClarityDown = omenOfClarityDown;
 
-    rotationData.mangleEnergy = GetSpellPowerCost(L["Mangle (Cat)"])[1].cost
-    rotationData.shredEnergy = GetSpellPowerCost(L["Shred"])[1].cost
-    rotationData.rakeEnergy = GetSpellPowerCost(L["Rake"])[1].cost
-    rotationData.ripEnergy = GetSpellPowerCost(L["Rip"])[1].cost
-    rotationData.savageRoarEnergy = GetSpellPowerCost(L["Savage Roar"])[1].cost
-    rotationData.ferociousBiteEnergy = GetSpellPowerCost(L["Ferocious Bite"])[1].cost
-    rotationData.mangleBearRage = GetSpellPowerCost(L["Mangle (Bear)"])[1].cost
-    rotationData.lacerateRage = GetSpellPowerCost(L["Lacerate"])[1].cost
-    rotationData.maulRage = GetSpellPowerCost(L["Maul"])
+    rotationData.mangleEnergy = GetSpellPowerCost(FeralByNerdDruidsLocalization.L["Mangle (Cat)"])[1].cost
+    rotationData.shredEnergy = GetSpellPowerCost(FeralByNerdDruidsLocalization.L["Shred"])[1].cost
+    rotationData.rakeEnergy = GetSpellPowerCost(FeralByNerdDruidsLocalization.L["Rake"])[1].cost
+    rotationData.ripEnergy = GetSpellPowerCost(FeralByNerdDruidsLocalization.L["Rip"])[1].cost
+    rotationData.savageRoarEnergy = GetSpellPowerCost(FeralByNerdDruidsLocalization.L["Savage Roar"])[1].cost
+    rotationData.ferociousBiteEnergy = GetSpellPowerCost(FeralByNerdDruidsLocalization.L["Ferocious Bite"])[1].cost
+    rotationData.mangleBearRage = GetSpellPowerCost(FeralByNerdDruidsLocalization.L["Mangle (Bear)"])[1].cost
+    rotationData.lacerateRage = GetSpellPowerCost(FeralByNerdDruidsLocalization.L["Lacerate"])[1].cost
+    rotationData.maulRage = GetSpellPowerCost(FeralByNerdDruidsLocalization.L["Maul"])
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Rake"], "target", "PLAYER|HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Rake"], "target", "PLAYER|HARMFUL");
     if name ~= nil then
         rotationData.rakeDuration = expirationTime - currentTime
         rotationData.rakeActive = true;
@@ -418,7 +416,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.rakeActive = false;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Rip"], "target", "PLAYER|HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Rip"], "target", "PLAYER|HARMFUL");
     if name ~= nil then
         rotationData.ripDuration = expirationTime - currentTime
         rotationData.ripActive = true;
@@ -427,7 +425,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.ripActive = false;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Mangle (Cat)"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Mangle (Cat)"], "target", "HARMFUL");
     if name ~= nil then
         mangleCatDuration = expirationTime - currentTime
         mangleCatActive = true;
@@ -436,7 +434,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         mangleCatActive = false;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Mangle (Bear)"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Mangle (Bear)"], "target", "HARMFUL");
     if name ~= nil then
         mangleBearDuration = expirationTime - currentTime
         mangleBearActive = true;
@@ -445,7 +443,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         mangleBearActive = false;
     end
 
-    name, _, count, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Lacerate"], "target", "HARMFUL");
+    name, _, count, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Lacerate"], "target", "HARMFUL");
 
     if name ~= nil then
         rotationData.lacerateBearDuration = expirationTime - currentTime
@@ -457,7 +455,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.lacerateBearStacks = 0;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Trauma"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Trauma"], "target", "HARMFUL");
     if name ~= nil then
         traumaWarriorDuration = expirationTime - currentTime
         traumaWarriorActive = true;
@@ -480,21 +478,21 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.bleedDebuffDuration = nil;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Faerie Fire (Feral)"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Faerie Fire (Feral)"], "target", "HARMFUL");
     if name ~= nil then
         rotationData.fairyFireFeralDuration = expirationTime - currentTime
     else
         rotationData.fairyFireFeralDuration = nil;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Faerie Fire"], "target", "HARMFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Faerie Fire"], "target", "HARMFUL");
     if name ~= nil then
         rotationData.fairyFireDuration = expirationTime - currentTime
     else
         rotationData.fairyFireDuration = nil;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Savage Roar"], "player", "HELPFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Savage Roar"], "player", "HELPFUL");
     if name ~= nil then
         rotationData.savageRoarActive = true;
         rotationData.savageRoarDuration = expirationTime - currentTime;
@@ -503,7 +501,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.savageRoarDuration = nil;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(L["Berserk"], "player", "HELPFUL");
+    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Berserk"], "player", "HELPFUL");
     if name ~= nil then
         rotationData.berserkActive = true;
         rotationData.berserkDuration = expirationTime - currentTime;
@@ -512,7 +510,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.berserkDuration = nil;
     end
 
-    startTime, duration, _ = GetSpellCooldown(L["Berserk"]);
+    startTime, duration, _ = GetSpellCooldown(FeralByNerdDruidsLocalization.L["Berserk"]);
     if(startTime == 0 or ((startTime - currentTime + duration - rotationData.globalCooldown) <= 0)) then
         rotationData.berserkReady = true;
         rotationData.berserkCooldown = 0;
@@ -521,7 +519,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.berserkCooldown = startTime - currentTime + duration;
     end
 
-    startTime, duration, _ = GetSpellCooldown(L["Enrage"]);
+    startTime, duration, _ = GetSpellCooldown(FeralByNerdDruidsLocalization.L["Enrage"]);
     if(startTime == 0 or ((startTime - currentTime + duration - rotationData.globalCooldown) <= 0)) then
         rotationData.enrageReady = true;
         rotationData.enrageCooldown = 0;
@@ -530,7 +528,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.enrageCooldown = startTime - currentTime + duration;
     end
 
-    startTime, duration, _ = GetSpellCooldown(L["Mangle (Bear)"]);
+    startTime, duration, _ = GetSpellCooldown(FeralByNerdDruidsLocalization.L["Mangle (Bear)"]);
     if(startTime == 0 or (startTime - currentTime + duration - rotationData.globalCooldown <= 0)) then
         rotationData.mangleBearReady = true;
         rotationData.mangleBearCooldown = 0;
@@ -539,7 +537,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.mangleBearCooldown = startTime - currentTime + duration;
     end
 
-    startTime, duration, _ = GetSpellCooldown(L["Faerie Fire (Feral)"]);
+    startTime, duration, _ = GetSpellCooldown(FeralByNerdDruidsLocalization.L["Faerie Fire (Feral)"]);
     if(startTime == 0 or (startTime - currentTime + duration - rotationData.globalCooldown <= 0)) then
         rotationData.faerieFireFeralReady = true;
         rotationData.faerieFireFeralCooldown = 0;
@@ -548,7 +546,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.faerieFireFeralCooldown = startTime - currentTime + duration;
     end
 
-    startTime, duration, _ = GetSpellCooldown(L["Tiger's Fury"]);
+    startTime, duration, _ = GetSpellCooldown(FeralByNerdDruidsLocalization.L["Tiger's Fury"]);
     if(startTime == 0 or (startTime - currentTime + duration - rotationData.globalCooldown <= 0)) then
         rotationData.tigersFuryReady = true;
         rotationData.tigersFuryCooldown = 0;
@@ -620,7 +618,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
             ripCost = rotationData.ripEnergy;
         end
         pendingActions[tostring(rotationData.ripDuration)] = ripCost;
-        pendingActionIcons[tostring(rotationData.ripDuration)] = L["Rip"];
+        pendingActionIcons[tostring(rotationData.ripDuration)] = FeralByNerdDruidsLocalization.L["Rip"];
         ripRefreshPending = true;
     end
 
@@ -631,7 +629,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
             rakeCost = rotationData.rakeEnergy;
         end
         pendingActions[tostring(rotationData.rakeDuration)] = rakeCost;
-        pendingActionIcons[tostring(rotationData.rakeDuration)] = L["Rake"];
+        pendingActionIcons[tostring(rotationData.rakeDuration)] = FeralByNerdDruidsLocalization.L["Rake"];
     end
 
     if(rotationData.bleedDebuffActive and (rotationData.bleedDebuffDuration < rotationData.encounterTimeRemaining - 1)) then
@@ -641,7 +639,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
             mangleCost = rotationData.mangleEnergy;
         end
         pendingActions[tostring(rotationData.bleedDebuffDuration)] = mangleCost;
-        pendingActionIcons[tostring(rotationData.bleedDebuffDuration)] = L["Mangle"];
+        pendingActionIcons[tostring(rotationData.bleedDebuffDuration)] = FeralByNerdDruidsLocalization.L["Mangle"];
     end
 
     if(rotationData.savageRoarActive) then
@@ -651,7 +649,7 @@ function FeralByNerdDruids:decideOnSpellInRotation()
             savageRoarCost = rotationData.savageRoarEnergy;
         end
         pendingActions[tostring(rotationData.savageRoarDuration)] = savageRoarCost;
-        pendingActionIcons[tostring(rotationData.bleedDebuffDuration)] = L["Savage Roar"];
+        pendingActionIcons[tostring(rotationData.bleedDebuffDuration)] = FeralByNerdDruidsLocalization.L["Savage Roar"];
     end
 
     local pendingActionKeys = {}

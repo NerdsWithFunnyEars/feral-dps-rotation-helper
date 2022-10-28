@@ -87,8 +87,8 @@ function FeralByNerdDruidsFrames:OnUpdate(elapsed)
     end
 
     while (FeralByNerdDruids.timeSinceLastUpdate >= FeralByNerdDruidsDB.updateInterval) do
-        local catform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(L["Cat Form"], "player", "HELPFUL")
-        local bearform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(L["Dire Bear Form"], "player", "HELPFUL")
+        local catform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Cat Form"], "player", "HELPFUL")
+        local bearform, _, _, _, _, _, _, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Dire Bear Form"], "player", "HELPFUL")
         local _, _, _, _, currRank, _ = GetTalentInfo(2, 27)
 
         if (((catform ~= nil) or (bearform ~= nil)) and currRank ~= 0) then

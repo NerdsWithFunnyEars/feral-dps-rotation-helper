@@ -11,11 +11,11 @@ function GetSpellName(spellID)
     local name = GetSpellInfo(spellID);
     return name;
 end
-
+FeralByNerdDruidsLocalization = {}
 --- Contains all spell names we use in this addon
 --- @type table
 
-L = {
+FeralByNerdDruidsLocalization.L = {
     --
     --- Damage Abilities Cat
     --

@@ -132,7 +132,7 @@ function FeralByNerdDruidsFrames.events.COMBAT_LOG_EVENT_UNFILTERED(_, subevent,
     --
     if(sourceGUID == FeralByNerdDruidsFrames.playerGUID and subevent == "SPELL_AURA_APPLIED") then
         local _, spellName = ...;
-        if(spellName == L["Rip"]) then
+        if(spellName == FeralByNerdDruidsLocalization.L["Rip"]) then
             FeralByNerdDruids.ripStartTime = GetTime();
         end
     end
