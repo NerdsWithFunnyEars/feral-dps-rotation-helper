@@ -51,7 +51,7 @@ function FeralByNerdDruidsOptions:createDropdown(opts)
 
     local dropdown = CreateFrame("Frame", dropdown_name, opts['parent'], 'UIDropDownMenuTemplate')
     local dd_title = dropdownParent:CreateFontString(dropdown, 'OVERLAY', 'GameFontNormal')
-    dd_title:SetPoint("TOPLEFT", 10, -90)
+    dd_title:SetPoint("TOPLEFT", 10, -50)
 
     for _, item in pairs(menu_items) do -- Sets the dropdown width to the largest item string width.
         dd_title:SetText(item)
@@ -117,42 +117,19 @@ end
 function FeralByNerdDruidsOptions:initializeOptionFrames()
     local panel = CreateFrame("Frame");
     panel.name = "FeralByNerdDruids";
-    InterfaceOptions_AddCategory(panel);  -- see InterfaceOptions API
+    InterfaceOptions_AddCategory(panel);
     local title = panel:CreateFontString("ARTWORK", nil, "GameFontNormalLarge");
     title:SetPoint("TOP");
     title:SetText("FeralByNerdDruids Configuration window");
 
-    local feralByNerdDruidsSetting1 = panel:CreateFontString("FeralByNerdDruidsOptions_string1","OVERLAY","GameFontNormal")
-    feralByNerdDruidsSetting1:SetText("Lock")
-    feralByNerdDruidsSetting1:SetPoint("TOPLEFT", 10, -10)
-    local checkbox1 = CreateFrame("CheckButton", "$parent_cb1", panel, "OptionsCheckButtonTemplate")
-    checkbox1:SetWidth(18)
-    checkbox1:SetHeight(18)
-    checkbox1:SetScript("OnClick", function() FeralByNerdDruidsOptions:ToggleLocked() end)
-    checkbox1:SetPoint("TOPRIGHT", -10, -10)
-    checkbox1:SetChecked(FeralByNerdDruidsOptions:GetLocked())
-
-    local feralByNerdDruidsSetting2 = panel:CreateFontString("FeralByNerdDruidsOptions_string2","OVERLAY","GameFontNormal")
-    feralByNerdDruidsSetting2:SetText("Suggestion Monitor Scale")
-    feralByNerdDruidsSetting2:SetPoint("TOPLEFT", 10, -40)
-    local slider1 = CreateFrame("Slider", "$parent_sl1", panel, "OptionsSliderTemplate")
-    slider1:SetMinMaxValues(.25, 2.0)
-    slider1:SetValue(FeralByNerdDruidsOptions:GetScale())
-    slider1:SetValueStep(.05)
-    slider1:SetScript("OnValueChanged", function(self) FeralByNerdDruidsOptions:SetScale(self:GetValue()); _G[self:GetName() .. "Text"]:SetText(self:GetValue())  end)
-    _G[slider1:GetName() .. "Low"]:SetText("0.25")
-    _G[slider1:GetName() .. "High"]:SetText("2.0")
-    _G[slider1:GetName() .. "Text"]:SetText(FeralByNerdDruidsOptions:GetScale())
-    slider1:SetPoint("TOPRIGHT", -10, -40)
-
     local feralByNerdDruidsSetting3 = panel:CreateFontString("FeralByNerdDruidsOptions_string3","OVERLAY","GameFontNormal")
     feralByNerdDruidsSetting3:SetText("Use Ferocious Bite")
-    feralByNerdDruidsSetting3:SetPoint("TOPLEFT", 10, -70)
+    feralByNerdDruidsSetting3:SetPoint("TOPLEFT", 10, -20)
     local checkbox2 = CreateFrame("CheckButton", "$parent_cb2", panel, "OptionsCheckButtonTemplate")
     checkbox2:SetWidth(18)
     checkbox2:SetHeight(18)
     checkbox2:SetScript("OnClick", function() FeralByNerdDruidsOptions:ToggleUseBite() end)
-    checkbox2:SetPoint("TOPRIGHT", -10, -70)
+    checkbox2:SetPoint("TOPRIGHT", -10, -20)
     checkbox2:SetChecked(FeralByNerdDruidsOptions:GetUseBite())
 
     local weaveOptions = {
@@ -167,5 +144,5 @@ function FeralByNerdDruidsOptions:initializeOptionFrames()
     }
 
     local feralByNerdDruidsSetting5 = FeralByNerdDruidsOptions:createDropdown(weaveOptions);
-    feralByNerdDruidsSetting5:SetPoint("TOPRIGHT", -10, -90);
+    feralByNerdDruidsSetting5:SetPoint("TOPRIGHT", 0, -50);
 end
