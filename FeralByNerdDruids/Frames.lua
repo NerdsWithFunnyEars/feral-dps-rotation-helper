@@ -7,6 +7,7 @@
 --- Global var where all frames are stored
 --- @type table
 FeralByNerdDruidsFrames = {}
+FeralByNerdDruidsFrames.lastUpdated = GetTime();
 FeralByNerdDruidsFrames.events = { };
 
 
@@ -17,14 +18,6 @@ FeralByNerdDruidsFrames.textureList = {
     ["cat"] = nil,
     ["berserk"] = nil,
 }
-
-FeralByNerdDruidsFrames.textList = {
-    ["bear"] = nil,
-    ["cat"] = nil,
-    ["berserk"] = nil,
-    ["next"] = nil
-}
-
 
 --- Event Frame Start
 ------------------------------------------------------------------------------------------------------------------------
@@ -53,10 +46,7 @@ FeralByNerdDruidsFrames.eventFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 ------------------------------------------------------------------------------------------------------------------------
 --- Event Frame End
 
--- Main Suggestion Frame Start
-------------------------------------------------------------------------------------------------------------------------
 function FeralByNerdDruidsFrames:InitializeFrames()
-    -- Create Main Frame
     local mainFrame = CreateFrame(
             "Frame",
             "FeralByNerdDruids_MainFrame",
@@ -65,140 +55,28 @@ function FeralByNerdDruidsFrames:InitializeFrames()
 
     -- Set Properties
     mainFrame:SetFrameStrata("Low")
-    mainFrame:SetWidth(250)
-    mainFrame:SetHeight(90)
+    mainFrame:SetWidth(1)
+    mainFrame:SetHeight(1)
     mainFrame:SetBackdrop({
-        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", tile = true, tileSize = 32,
-    })
-
-    mainFrame:SetBackdropColor(0, 0, 0, 0.4)
-    mainFrame:EnableMouse(true)
-    mainFrame:SetMovable(true)
-    mainFrame:SetClampedToScreen(true)
-    mainFrame:SetScript("OnMouseDown", function(self)
-        self:StartMoving()
-    end)
-    mainFrame:SetScript("OnMouseUp", function(self)
-        self:StopMovingOrSizing()
-    end)
-    mainFrame:SetScript("OnDragStop", function(self)
-        self:StopMovingOrSizing()
-    end)
-    mainFrame:SetPoint("CENTER")
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", tile = true, tileSize = 1,
+    });
+    mainFrame:SetBackdropColor(0, 0, 0, 0.1);
+    mainFrame:EnableMouse(false);
+    mainFrame:SetMovable(false);
+    mainFrame:SetClampedToScreen(true);
+    mainFrame:SetScript("OnMouseDown", nil)
+    mainFrame:SetScript("OnMouseUp", nil);
+    mainFrame:SetPoint("TOPRIGHT");
 
     mainFrame:SetScript("OnUpdate", function(_, elapsed)
         FeralByNerdDruidsFrames:OnUpdate(elapsed)
     end)
 
     FeralByNerdDruidsFrames.mainFrame = mainFrame;
-------------------------------------------------------------------------------------------------------------------------
---- Main Suggestion Frame End
-
---- Helper Texture Frames
-------------------------------------------------------------------------------------------------------------------------
-
-    -- Display Frame for the current ability centered on the Main Frame
-    local mainFrame_current = CreateFrame("Frame", "$parent_current", mainFrame)
-    mainFrame_current:SetWidth(70)
-    mainFrame_current:SetHeight(70)
-    mainFrame_current:SetPoint("TOPLEFT", 90, -10)
-    local t = mainFrame_current:CreateTexture(nil, "Low")
-    t:SetTexture(nil)
-    t:SetAllPoints(mainFrame_current)
-    t:SetAlpha(.8)
-    mainFrame_current.texture = t
-    FeralByNerdDruidsFrames.textureList["current"] = t
-
-    -- Display Frame for the next ability, bottom right on the main Frame
-    local mainFrame_next = CreateFrame("Frame", "$parent_next", mainFrame)
-    mainFrame_next:SetWidth(45)
-    mainFrame_next:SetHeight(45)
-    mainFrame_next:SetPoint("TOPLEFT", 200, -45)
-    t = mainFrame_next:CreateTexture(nil, "Low")
-    t:SetTexture(nil)
-    t:SetAllPoints(mainFrame_next)
-    t:SetAlpha(.8)
-    mainFrame_next.texture = t
-    local text = mainFrame_next:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    text:SetAllPoints();
-    text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE, MONOCHROME")
-    text:SetTextColor(1, 0, 0, 1);
-    mainFrame_next.text = text;
-    FeralByNerdDruidsFrames.textList["next"] = text;
-    FeralByNerdDruidsFrames.textureList["next"] = t
-
-    -- Display Frame for Bear Information, bottom left on the main Frame
-    local mainFrame_bear = CreateFrame("Frame", "$parent_bear", mainFrame)
-    mainFrame_bear:SetWidth(45)
-    mainFrame_bear:SetHeight(45)
-    mainFrame_bear:SetPoint("TOPLEFT", 0, -45)
-    t = mainFrame_bear:CreateTexture(nil, "Low")
-    t:SetTexture(nil)
-    t:SetAllPoints(mainFrame_bear)
-    t:SetAlpha(.8)
-    mainFrame_bear.texture = t
-    FeralByNerdDruidsFrames.textureList["bear"] = t
-    text = mainFrame_bear:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    text:SetAllPoints();
-    text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE, MONOCHROME")
-    text:SetTextColor(1, 0, 0, 1);
-    mainFrame_bear.text = text;
-    FeralByNerdDruidsFrames.textList["bear"] = text;
-
-    -- Display Frame for Cat Information, top left on the main Frame
-    local mainFrame_cat = CreateFrame("Frame", "$parent_cat", mainFrame)
-    mainFrame_cat:SetWidth(45)
-    mainFrame_cat:SetHeight(45)
-    mainFrame_cat:SetPoint("TOPLEFT", 0, 0)
-    t = mainFrame_cat:CreateTexture(nil, "Low")
-    t:SetTexture(nil)
-    t:SetAllPoints(mainFrame_cat)
-    t:SetAlpha(.8)
-    mainFrame_cat.texture = t
-    FeralByNerdDruidsFrames.textureList["cat"] = t
-    text = mainFrame_cat:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    text:SetAllPoints();
-    text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE, MONOCHROME")
-    text:SetTextColor(1, 0, 0, 1);
-    mainFrame_cat.text = text;
-    FeralByNerdDruidsFrames.textList["cat"] = text;
-
-
-    -- Display Frame for Berserk Data, top right on the main Frame
-    local mainFrame_berserk = CreateFrame("Frame", "$parent_berserk", mainFrame)
-    mainFrame_berserk:SetHeight(45)
-    mainFrame_berserk:SetWidth(45)
-    mainFrame_berserk:SetPoint("TOPLEFT", 200, 0)
-    t = mainFrame_berserk:CreateTexture(nil, "Low")
-    t:SetTexture(nil)
-    t:SetAllPoints(mainFrame_berserk)
-    t:SetAlpha(.8)
-    mainFrame_berserk.texture = t
-    FeralByNerdDruidsFrames.textureList["berserk"] = t
-    text = mainFrame_berserk:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    text:SetAllPoints();
-    text:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE, MONOCHROME")
-    text:SetTextColor(1, 0, 0, 1);
-    mainFrame_berserk.text = text;
-    FeralByNerdDruidsFrames.textList["berserk"] = text;
-
-
-    FeralByNerdDruidsFrames.globalCooldownFrame = CreateFrame("Cooldown", "FeralByNerdDruids_GCDFrame", mainFrame_current, "CooldownFrameTemplate");
-    FeralByNerdDruidsFrames.globalCooldownFrame:SetAllPoints();
-
-    FeralByNerdDruidsFrames.mainFrame_current = mainFrame_current;
-    FeralByNerdDruidsFrames.mainFrame_next = mainFrame_next;
-    FeralByNerdDruidsFrames.mainFrame_bear = mainFrame_bear;
-    FeralByNerdDruidsFrames.mainFrame_cat = mainFrame_cat;
-    FeralByNerdDruidsFrames.mainFrame_berserk = mainFrame_berserk;
 end
-------------------------------------------------------------------------------------------------------------------------
--- Helper Texture Frames End
 
 function FeralByNerdDruidsFrames:OnUpdate(elapsed)
     FeralByNerdDruids.timeSinceLastUpdate = FeralByNerdDruids.timeSinceLastUpdate + elapsed;
-
-    local start, duration = GetSpellCooldown(L["Rake"])
 
     local attackSpeed = UnitAttackSpeed("player");
 
@@ -214,18 +92,7 @@ function FeralByNerdDruidsFrames:OnUpdate(elapsed)
         local _, _, _, _, currRank, _ = GetTalentInfo(2, 27)
 
         if (((catform ~= nil) or (bearform ~= nil)) and currRank ~= 0) then
-            FeralByNerdDruidsFrames.globalCooldownFrame:SetCooldown(start, duration)
             FeralByNerdDruids:decideOnSpellInRotation()
-        else
-            FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(nil)
-            FeralByNerdDruidsFrames.textureList["current"]:SetTexture(nil)
-            FeralByNerdDruidsFrames.textureList["next"]:SetTexture(nil)
-            FeralByNerdDruidsFrames.textureList["cat"]:SetTexture(nil)
-            FeralByNerdDruidsFrames.textureList["berserk"]:SetTexture(nil)
-            FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
-            FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 0);
-            FeralByNerdDruidsFrames.textList["berserk"]:SetTextColor(1, 0, 0, 0);
-            FeralByNerdDruidsFrames.textList["next"]:SetTextColor(1, 0, 0, 0);
         end
         FeralByNerdDruids.timeSinceLastUpdate = FeralByNerdDruids.timeSinceLastUpdate - FeralByNerdDruidsDB.updateInterval;
     end

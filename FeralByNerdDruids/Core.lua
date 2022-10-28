@@ -27,18 +27,10 @@ FeralByNerdDruids.damage = 0;
 FeralByNerdDruids.tTillZero = 999999;
 FeralByNerdDruids.lastSwingTimer = 0;
 FeralByNerdDruids.timeToNextSwing = 0;
-
 FeralByNerdDruids.weavingType = "Mangleweave";
 
-
--- Txt List
-FeralByNerdDruids.textureList = {
-    ["last"] = nil,
-    ["current"] = nil,
-    ["next"] = nil,
-    ["misc"] = nil,
-    ["int"] = nil,
-}
+FeralByNerdDruidsAPI = {};
+FeralByNerdDruidsAPI.currentSpell = nil;
 ------------------------------------------------------------------------------------------------------------------------
 -- Local Variables end
 
@@ -135,10 +127,6 @@ function FeralByNerdDruids:nextSpell(rotationData)
         return L["Faerie Fire (Feral)"]
     end
 
-    if(rotationData.catForm == true and rotationData.tigersFuryReady and rotationData.berserkActive == false and rotationData.kingOfTheJungleEnergy < 100 - rotationData.catEnergy) then
-        return L["Tiger's Fury"];
-    end
-
     if(rotationData.catForm ~= true) then
         local shiftNow = (rotationData.catEnergy + 15.0 + (10.0 * rotationData.catLatency) > rotationData.furorEnergyCap) or
                 (rotationData.ripRefreshPending and (rotationData.ripDuration < (3.0)));
@@ -188,8 +176,6 @@ function FeralByNerdDruids:nextSpell(rotationData)
         end
     elseif (rotationData.emergencyBearweave) then
         return L["Dire Bear Form"];
-    elseif (rotationData.berserkNow) then
-        return L["Berserk"];
     elseif (rotationData.savageRoarNow) then
         return L["Savage Roar"];
     elseif (rotationData.ripNow) then
@@ -206,6 +192,11 @@ function FeralByNerdDruids:nextSpell(rotationData)
         return L["Shred"];
     end
 
+    if not rotationData.emergencyBearweave and rotationData.berserkNow then
+        FeralByNerdDruidsAPI.berserkNow = rotationData.berserkNow;
+    else
+        FeralByNerdDruidsAPI.berserkNow = false;
+    end
     return nil;
 end
 
@@ -258,15 +249,7 @@ end
 function FeralByNerdDruids:decideOnSpellInRotation()
     local guid = UnitGUID("target")
     if guid == nil or UnitCanAttack("player", "target") == false then
-        FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(nil)
-        FeralByNerdDruidsFrames.textureList["current"]:SetTexture(nil)
-        FeralByNerdDruidsFrames.textureList["next"]:SetTexture(nil)
-        FeralByNerdDruidsFrames.textureList["cat"]:SetTexture(nil)
-        FeralByNerdDruidsFrames.textureList["berserk"]:SetTexture(nil)
-        FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
-        FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 0);
-        FeralByNerdDruidsFrames.textList["berserk"]:SetTextColor(1, 0, 0, 0);
-        FeralByNerdDruidsFrames.textList["next"]:SetTextColor(1, 0, 0, 0);
+        FeralByNerdDruidsAPI.currentSpell = nil;
         return
     end
 
@@ -608,12 +591,18 @@ function FeralByNerdDruids:decideOnSpellInRotation()
             rotationData.encounterTimeRemaining > rakeMaxDuration and
             omenOfClarityDown;
 
-    rotationData.berserkNow = rotationData.berserkReady and (rotationData.tigersFuryCooldown  > maxBerserkDuration);
+    rotationData.berserkNow = rotationData.berserkReady and (rotationData.tigersFuryCooldown  > maxBerserkDuration) and (rotationData.catEnergy > 80);
 
     rotationData.savageRoarNow = rotationData.comboPoints >= 1 and (
             rotationData.savageRoarActive == false or
                     self:clipSavageRoar(rotationData)
     )
+
+    if(rotationData.catForm == true and rotationData.tigersFuryReady and rotationData.berserkActive == false and rotationData.kingOfTheJungleEnergy < 100 - rotationData.catEnergy) then
+        rotationData.tigersFuryNow = true;
+    else
+        rotationData.tigersFuryNow = false;
+    end
 
     local ripRefreshPending = false;
     local pendingActions = { };
@@ -714,116 +703,10 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     rotationData.excessEnergy = excessEnergy;
     rotationData.ripRefreshPending = ripRefreshPending;
 
-    spell = FeralByNerdDruids:nextSpell(rotationData)
-    if(rotationData.globalCooldown <= FeralByNerdDruids.timeToNextSwing) then
-        FeralByNerdDruidsFrames.textureList["current"]:SetDesaturated(false);
-    else
-        FeralByNerdDruidsFrames.textureList["current"]:SetDesaturated(true);
-    end
-
-    FeralByNerdDruidsFrames.textureList["current"]:SetTexture(GetSpellTexture(spell));
-
-    FeralByNerdDruidsFrames.textureList["next"]:SetTexture(GetSpellTexture(L["Enrage"]));
-    if(rotationData.enrageReady) then
-        FeralByNerdDruidsFrames.textureList["next"]:SetDesaturated(false);
-        FeralByNerdDruidsFrames.textList["next"]:SetText(nil);
-        FeralByNerdDruidsFrames.textList["next"]:SetTextColor(1, 0, 0, 0);
-    else
-        FeralByNerdDruidsFrames.textureList["next"]:SetDesaturated(true);
-        FeralByNerdDruidsFrames.textList["next"]:SetText(math.ceil(rotationData.enrageCooldown));
-        FeralByNerdDruidsFrames.textList["next"]:SetTextColor(1, 0, 0, 1);
-    end
-
-    if(rotationData.bearForm) then
-        FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
-        if(self:checkQueueMaul(rotationData)) then
-            FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(GetSpellTexture(L["Maul"]));
-            if(isMaulQueued()) then
-                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(false);
-            else
-                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(true);
-            end
-        else
-            FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(nil);
-        end
-        FeralByNerdDruidsFrames.textureList["cat"]:SetTexture(GetSpellTexture(L["Rip"]))
-        if(rotationData.ripActive) then
-            FeralByNerdDruidsFrames.textureList["cat"]:SetDesaturated(false);
-            FeralByNerdDruidsFrames.textList["cat"]:SetText(math.ceil(rotationData.ripDuration));
-            FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 1);
-        else
-            FeralByNerdDruidsFrames.textureList["cat"]:SetDesaturated(true);
-            FeralByNerdDruidsFrames.textList["cat"]:SetText(nil);
-            FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 0);
-        end
-    elseif(rotationData.catForm) then
-        if(self:getWeavingType() == 2) then
-            FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(GetSpellTexture(L["Lacerate"]));
-            if(rotationData.lacerateBearActive) then
-                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(false);
-                FeralByNerdDruidsFrames.textList["bear"]:SetText(math.ceil(rotationData.lacerateBearDuration));
-                FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 1);
-            else
-                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(true);
-                FeralByNerdDruidsFrames.textList["bear"]:SetText(nil);
-                FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
-            end
-        end
-        if(self:getWeavingType() == 1) then
-            FeralByNerdDruidsFrames.textureList["bear"]:SetTexture(GetSpellTexture(L["Mangle (Bear)"]));
-            if(rotationData.mangleBearReady) then
-                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(false);
-                FeralByNerdDruidsFrames.textList["bear"]:SetText(nil);
-                FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 0);
-            else
-                FeralByNerdDruidsFrames.textureList["bear"]:SetDesaturated(true);
-                FeralByNerdDruidsFrames.textList["bear"]:SetText(math.ceil(rotationData.mangleBearCooldown));
-                FeralByNerdDruidsFrames.textList["bear"]:SetTextColor(1, 0, 0, 1);
-            end
-        end
-        FeralByNerdDruidsFrames.textureList["cat"]:SetTexture(GetSpellTexture(L["Tiger's Fury"]))
-        if(rotationData.tigersFuryReady) then
-            FeralByNerdDruidsFrames.textureList["cat"]:SetDesaturated(false);
-            FeralByNerdDruidsFrames.textList["cat"]:SetText(nil);
-            FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 0);
-        else
-            FeralByNerdDruidsFrames.textureList["cat"]:SetDesaturated(true);
-            FeralByNerdDruidsFrames.textList["cat"]:SetText(math.ceil(rotationData.tigersFuryCooldown));
-            FeralByNerdDruidsFrames.textList["cat"]:SetTextColor(1, 0, 0, 1);
-        end
-    end
-    FeralByNerdDruidsFrames.textureList["berserk"]:SetTexture(GetSpellTexture(L["Berserk"]));
-    if(rotationData.berserkReady) then
-        FeralByNerdDruidsFrames.textureList["berserk"]:SetDesaturated(false);
-        FeralByNerdDruidsFrames.textList["berserk"]:SetText(nil);
-        FeralByNerdDruidsFrames.textList["berserk"]:SetTextColor(1, 0, 0, 0);
-    else
-        FeralByNerdDruidsFrames.textureList["berserk"]:SetDesaturated(true);
-        FeralByNerdDruidsFrames.textList["berserk"]:SetText(math.ceil(rotationData.berserkCooldown));
-        FeralByNerdDruidsFrames.textList["berserk"]:SetTextColor(1, 0, 0, 1);
-    end
-end
-
---GUID Parser
-function parseGUID(guid)
-    if guid == nil then
-        FeralByNerdDruids.currentTarget.id = 0000;
-        --print("No target, ID #",FeralByNerdDruids.currentTarget.id)
-        return
-    end
-    if guid then
-        local unit_type = strsplit("-", guid)
-        if unit_type == "Player" then
-            local _, _, _ = strsplit("-", guid)
-            FeralByNerdDruids.currentTarget.unitType = 0x000
-        elseif unit_type == "Creature" then
-            local _, _, _, _, _, _, spawn_uid = strsplit("-", guid)
-            FeralByNerdDruids.currentTarget.unitType = 0x003
-            FeralByNerdDruids.currentTarget.id = spawn_uid
-        elseif unit_type == "Pet" then
-            FeralByNerdDruids.currentTarget.unitType = 0x004
-        elseif unit_type == "Vehicle" then
-            FeralByNerdDruids.currentTarget.unitType = 0x005
-        end
-    end
+    local nextSpell = FeralByNerdDruids:nextSpell(rotationData)
+    local _, _, _, _, _, _, spellID = GetSpellInfo(nextSpell);
+    FeralByNerdDruidsAPI.currentSpell = spellID;
+    FeralByNerdDruidsAPI.lockedIn = rotationData.globalCooldown <= FeralByNerdDruids.timeToNextSwing;
+    FeralByNerdDruidsAPI.globalCooldownStart = start;
+    FeralByNerdDruidsAPI.tigersFuryNow = rotationData.tigersFuryNow;
 end
