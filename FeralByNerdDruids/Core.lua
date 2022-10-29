@@ -127,6 +127,12 @@ function FeralByNerdDruids:nextSpell(rotationData)
         return FeralByNerdDruidsLocalization.L["Faerie Fire (Feral)"]
     end
 
+    if not rotationData.emergencyBearweave and rotationData.berserkNow then
+        FeralByNerdDruidsAPI.berserkNow = rotationData.berserkNow;
+    else
+        FeralByNerdDruidsAPI.berserkNow = false;
+    end
+
     if(rotationData.catForm ~= true) then
         local shiftNow = (rotationData.catEnergy + 15.0 + (10.0 * rotationData.catLatency) > rotationData.furorEnergyCap) or
                 (rotationData.ripRefreshPending and (rotationData.ripDuration < (3.0)));
@@ -190,12 +196,6 @@ function FeralByNerdDruids:nextSpell(rotationData)
         return FeralByNerdDruidsLocalization.L["Dire Bear Form"];
     elseif(rotationData.excessEnergy >= rotationData.shredEnergy or rotationData.omenOfClarityDown == false) then
         return FeralByNerdDruidsLocalization.L["Shred"];
-    end
-
-    if not rotationData.emergencyBearweave and rotationData.berserkNow then
-        FeralByNerdDruidsAPI.berserkNow = rotationData.berserkNow;
-    else
-        FeralByNerdDruidsAPI.berserkNow = false;
     end
     return nil;
 end
