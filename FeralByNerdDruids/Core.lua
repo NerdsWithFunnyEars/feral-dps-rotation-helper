@@ -127,7 +127,7 @@ function FeralByNerdDruids:nextSpell(rotationData)
         return FeralByNerdDruidsLocalization.L["Faerie Fire (Feral)"]
     end
 
-    if not rotationData.emergencyBearweave and rotationData.berserkNow then
+    if not rotationData.emergencyBearweave and rotationData.berserkNow and rotationData.catForm == true then
         FeralByNerdDruidsAPI.berserkNow = rotationData.berserkNow;
     else
         FeralByNerdDruidsAPI.berserkNow = false;
