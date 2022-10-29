@@ -71,6 +71,15 @@ function FeralByNerdDruids:getWeavingType()
     end
 end
 
+function FeralByNerdDruids:isMaulQueued()
+    for lActionSlot = 1, 120 do
+        if(IsCurrentAction(lActionSlot) and GetActionTexture(lActionSlot) == GetSpellTexture(FeralByNerdDruidsLocalization.L["Maul"])) then
+            return true;
+        end
+    end
+    return false;
+end
+
 -- Ported from https://github.com/wowsims/wotlk/
 function FeralByNerdDruids:checkQueueMaul(rotationData)
     local furorCap = rotationData.furorEnergyCap;
@@ -119,7 +128,6 @@ function FeralByNerdDruids:checkQueueMaul(rotationData)
     else
         return false;
     end
-
 end
 
 function FeralByNerdDruids:nextSpell(rotationData)
@@ -250,6 +258,13 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     local guid = UnitGUID("target")
     if guid == nil or UnitCanAttack("player", "target") == false then
         FeralByNerdDruidsAPI.currentSpell = nil;
+        FeralByNerdDruidsAPI.lockedIn = true;
+        FeralByNerdDruidsAPI.globalCooldownStart = nil;
+        FeralByNerdDruidsAPI.tigersFuryNow = false;
+        FeralByNerdDruidsAPI.berserkNow = false;
+        FeralByNerdDruidsAPI.queueMaul = false;
+        FeralByNerdDruidsAPI.emergencyBearweave = false;
+        FeralByNerdDruidsAPI.weavingType = nil;
         return
     end
 
@@ -707,4 +722,8 @@ function FeralByNerdDruids:decideOnSpellInRotation()
     FeralByNerdDruidsAPI.lockedIn = rotationData.globalCooldown <= FeralByNerdDruids.timeToNextSwing;
     FeralByNerdDruidsAPI.globalCooldownStart = start;
     FeralByNerdDruidsAPI.tigersFuryNow = rotationData.tigersFuryNow;
+    FeralByNerdDruidsAPI.queueMaul = FeralByNerdDruids:checkQueueMaul(rotationData);
+    FeralByNerdDruidsAPI.maulQueued = FeralByNerdDruids:isMaulQueued();
+    FeralByNerdDruidsAPI.emergencyBearweave = emergencyBearweave;
+    FeralByNerdDruidsAPI.weavingType = FeralByNerdDruids:getWeavingType();
 end
