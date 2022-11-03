@@ -516,8 +516,8 @@ function FeralByNerdDruids:decideOnSpellInRotation()
         rotationData.savageRoarDuration = nil;
     end
 
-    name, _, _, _, duration, expirationTime, _, _ = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Berserk"], "player", "HELPFUL");
-    if name ~= nil then
+    name, _, _, _, duration, expirationTime, _, _, _, spellID = AuraUtil.FindAuraByName(FeralByNerdDruidsLocalization.L["Berserk"], "player", "HELPFUL");
+    if name ~= nil and spellID ~= 59620 then
         rotationData.berserkActive = true;
         rotationData.berserkDuration = expirationTime - currentTime;
     else
