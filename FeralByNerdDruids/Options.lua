@@ -50,7 +50,7 @@ function FeralByNerdDruidsOptions:createDropdown(opts)
     local dropdownParent = opts['parent'];
 
     local dropdown = CreateFrame("Frame", dropdown_name, opts['parent'], 'UIDropDownMenuTemplate')
-    local dd_title = dropdownParent:CreateFontString(dropdown, 'OVERLAY', 'GameFontNormal')
+    local dd_title = dropdownParent:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     dd_title:SetPoint("TOPLEFT", 10, -90)
 
     for _, item in pairs(menu_items) do -- Sets the dropdown width to the largest item string width.
